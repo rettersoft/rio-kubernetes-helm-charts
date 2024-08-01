@@ -1,0 +1,20 @@
+replicaCount: 1
+
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  debugPort: 9229
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/fifo.js

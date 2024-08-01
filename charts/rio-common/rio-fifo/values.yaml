@@ -1,0 +1,30 @@
+global:
+  queues:
+    - name: MainTests
+      class: MainTests
+      partitions: 2
+      consumers:
+        - 0-2
+  env:
+    PROJECT_ID: projectid3
+    RABBITMQ_HOST: 'rabbitmq.default.svc.cluster.local'
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USERNAME: 'new-user'
+    RABBITMQ_PASSWORD: 'new-password'
+    REDIS_MODE: 'standalone'
+    REDIS_HOST: 'redis-master.default.svc.cluster.local'
+    REDIS_PORT: 6379
+    REDIS_PASSWORD: 'password'
+    SCHEDULER_REDIS_MODE: 'standalone'
+    SCHEDULER_REDIS_HOST: 'scheduler-redis-master.default.svc.cluster.local'
+    SCHEDULER_REDIS_PORT: 6379
+    SCHEDULER_REDIS_PASSWORD: 'password'
+    MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
+    USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
+    SCHEDULER_API_URL: 'http://projectid3-rio-scheduler-api.default.svc.cluster.local'
+    RDK_URL: 'http://projectid3-rio-rdk.default.svc.cluster.local'
+  podAnnotations: { }
+  image:
+    repository: projectid3
+    tag: 116
+    pullPolicy: IfNotPresent

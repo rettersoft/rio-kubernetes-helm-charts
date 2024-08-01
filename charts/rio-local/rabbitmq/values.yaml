@@ -1,0 +1,11 @@
+rabbitmq:
+  auth:
+    username: new-user
+    password: new-password
+  extraPlugins: "rabbitmq_consistent_hash_exchange rabbitmq_delayed_message_exchange"
+  clustering:
+    enabled: false
+
+
+
+

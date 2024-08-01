@@ -1,0 +1,9 @@
+dependencies:
+- name: main-consumer
+  repository: file://./main-consumer
+  version: 0.1.0
+- name: proxy-consumer
+  repository: file://./proxy-consumer
+  version: 0.1.0
+digest: sha256:47d287ab7b709dc04aa5538038c0fc183ae5598b38d85e752dda26149fa18c1d
+generated: "2024-07-19T11:58:03.310478+03:00"

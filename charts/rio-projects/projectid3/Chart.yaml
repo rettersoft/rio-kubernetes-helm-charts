@@ -1,0 +1,26 @@
+apiVersion: v2
+name: user-code
+description: A Helm chart for the runtime component
+version: 0.1.0
+appVersion: "1.0"
+
+
+dependencies:
+  - name: rio-api
+    version: 0.1.0
+    repository: file://../../rio-common/rio-api
+  - name: rio-scheduler-api
+    version: 0.1.0
+    repository: file://../../rio-common/rio-scheduler-api
+  - name: rio-scheduler-task-consumer
+    version: 0.1.0
+    repository: file://../../rio-common/rio-scheduler-task-consumer
+  - name: rio-scheduler-cron-consumer
+    version: 0.1.0
+    repository: file://../../rio-common/rio-scheduler-cron-consumer
+  - name: rio-scheduler-dashboard
+    version: 0.1.0
+    repository: file://../../rio-common/rio-scheduler-dashboard
+  - name: rio-rdk
+    version: 0.1.0
+    repository: file://../../rio-common/rio-rdk

@@ -1,0 +1,18 @@
+grafana:
+  adminUser: admin
+  adminPassword: strongpassword
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          url: http://loki.monitoring:3100
+          jsonData:
+            esVersion: 7
+            timeField: '@timestamp'
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://prometheus-server.monitoring:80

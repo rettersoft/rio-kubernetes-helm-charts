@@ -1,0 +1,33 @@
+
+repositories:
+  - name: grafana
+    url: https://grafana.github.io/helm-charts
+  - name: prometheus-community
+    url: https://prometheus-community.github.io/helm-charts
+  - name: bitnami
+    url: https://charts.bitnami.com/bitnami
+
+releases:
+  - name: loki
+    namespace: monitoring
+    chart: ./loki
+
+  - name: prometheus
+    namespace: monitoring
+    chart: ./prometheus
+
+  - name: grafana
+    namespace: monitoring
+    chart: ./grafana
+
+  - name: redis
+    chart: ./redis
+
+  - name: rabbitmq
+    chart: ./rabbitmq
+
+  - name: scheduler-redis
+    chart: ./scheduler-redis
+
+  - name: mongo
+    chart: ./mongo

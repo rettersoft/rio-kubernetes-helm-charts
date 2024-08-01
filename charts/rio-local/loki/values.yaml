@@ -1,0 +1,22 @@
+global:
+
+loki-stack:
+  loki:
+    resources:
+      limits:
+        cpu: 200m
+        memory: 384Mi
+      requests:
+        cpu: 200m
+        memory: 384Mi
+  promtail:
+    serviceAccount:
+      create: true
+      name: loki-promtail
+    config:
+      snippets:
+        extraRelabelConfigs:
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_image
+            target_label: image

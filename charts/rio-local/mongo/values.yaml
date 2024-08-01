@@ -1,0 +1,25 @@
+replicaCount: 1
+
+image:
+  repository: arm64v8/mongo
+  tag: 7.0
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 27017
+
+mongodb:
+  username: admin
+  password: password
+  database: mydatabase
+
+persistence:
+  enabled: true
+  accessMode: ReadWriteOnce
+  size: 8Gi
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}

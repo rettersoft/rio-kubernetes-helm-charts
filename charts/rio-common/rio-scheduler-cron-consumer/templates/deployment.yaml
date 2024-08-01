@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rio-scheduler-cron-consumer.fullname" . }}
+  labels:
+    app: {{ include "rio-scheduler-cron-consumer.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "rio-scheduler-cron-consumer.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "rio-scheduler-cron-consumer.fullname" . }}
+      annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: {{ include "rio-scheduler-cron-consumer.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- if .Values.command }}
+          command: {{ .Values.command | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ include "rio-scheduler-cron-consumer.name" . }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
+            - name: REDIS_CONFIG
+              value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
+            {{- range $key, $value := .Values.global.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: {{ .Values.service.debugPort }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys

@@ -1,0 +1,17 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "rio-api.fullname" . }}
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: localhost
+      http:
+        paths:
+          - pathType: Prefix
+            path: {{ .Values.ingress.path }}
+            backend:
+              service:
+                name: {{ include "rio-api.fullname" . }}
+                port:
+                  number: 80

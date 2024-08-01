@@ -1,0 +1,30 @@
+replicaCount: 1
+image:
+  repository: rio-base-image
+  tag: asdf
+  pullPolicy: IfNotPresent
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/rdk.js
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+projectId: asdf
+ingress:
+  enabled: true
+
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}

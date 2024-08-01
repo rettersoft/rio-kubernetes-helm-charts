@@ -1,0 +1,140 @@
+replicaCount: 1
+
+image:
+  repository: projectid3
+  tag: ${IMAGE_TAG}
+  pullPolicy: IfNotPresent
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/user-code.js
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  debugPort: 9229
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 528Mi
+  requests:
+    cpu: 500m
+    memory: 228Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+global:
+  env:
+    PROJECT_ID: projectid3
+    RABBITMQ_HOST: 'rabbitmq.default.svc.cluster.local'
+    RABBITMQ_PORT: 5672
+    RABBITMQ_USERNAME: 'new-user'
+    RABBITMQ_PASSWORD: 'new-password'
+    REDIS_MODE: 'standalone'
+    REDIS_HOST: 'redis-master.default.svc.cluster.local'
+    REDIS_PORT: 6379
+    REDIS_PASSWORD: 'password'
+    SCHEDULER_REDIS_HOST: 'scheduler-redis-master.default.svc.cluster.local'
+    SCHEDULER_REDIS_PORT: 6379
+    SCHEDULER_REDIS_PASSWORD: 'password'
+    MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
+    USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
+    SCHEDULER_API_URL: 'http://projectid3-rio-scheduler-api.default.svc.cluster.local'
+    RDK_URL: 'http://projectid3-rio-rdk.default.svc.cluster.local'
+  podAnnotations: {}
+
+
+
+
+rio-api:
+  image:
+    repository: projectid3
+    tag: ${IMAGE_TAG}
+    pullPolicy: IfNotPresent
+  ingress:
+    enabled: true
+    path: /projectid3
+    canary: false
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 50
+  resources:
+    limits:
+      cpu: 100m
+      memory: 128Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/api.js
+
+rio-scheduler-task-consumer:
+  image:
+    repository: projectid3
+    tag: 115
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+
+rio-scheduler-cron-consumer:
+  image:
+    repository: projectid3
+    tag: 115
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-cron-consumer.js
+
+rio-scheduler-api:
+  image:
+    repository: projectid3
+    tag: 115
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-api.js
+
+rio-scheduler-dashboard:
+  image:
+    repository: mstkk/bulldashboard
+    tag: latest
+    pullPolicy: Always
+  queues:
+    - projectid3_task
+    - projectid3_cron
+rio-rdk:
+  image:
+    repository: projectid3
+    tag: 115
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/rdk.js

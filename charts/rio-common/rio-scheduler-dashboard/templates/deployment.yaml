@@ -1,0 +1,49 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rio-scheduler-dashboard.fullname" . }}
+  labels:
+    app: {{ include "rio-scheduler-dashboard.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "rio-scheduler-dashboard.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "rio-scheduler-dashboard.fullname" . }}
+    spec:
+      dnsPolicy: ClusterFirst
+      containers:
+        - name: {{ include "rio-scheduler-dashboard.fullname" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          {{- if .Values.command }}
+          command: {{ .Values.command | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ include "rio-scheduler-dashboard.name" . }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
+            - name: REDIS_HOST
+              value: "{{ .Values.global.env.SCHEDULER_REDIS_HOST }}"
+            - name: REDIS_PORT
+              value: "{{ .Values.global.env.SCHEDULER_REDIS_PORT }}"
+            - name: REDIS_PASSWORD
+              value: "{{ .Values.global.env.SCHEDULER_REDIS_PASSWORD }}"
+            - name: QUEUES
+              value: "{{ .Values.queues | join "," }}"
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: {{ .Values.service.debugPort }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}

@@ -1,0 +1,21 @@
+dependencies:
+- name: rio-api
+  repository: file://../../rio-common/rio-api
+  version: 0.1.0
+- name: rio-scheduler-api
+  repository: file://../../rio-common/rio-scheduler-api
+  version: 0.1.0
+- name: rio-scheduler-task-consumer
+  repository: file://../../rio-common/rio-scheduler-task-consumer
+  version: 0.1.0
+- name: rio-scheduler-cron-consumer
+  repository: file://../../rio-common/rio-scheduler-cron-consumer
+  version: 0.1.0
+- name: rio-scheduler-dashboard
+  repository: file://../../rio-common/rio-scheduler-dashboard
+  version: 0.1.0
+- name: rio-rdk
+  repository: file://../../rio-common/rio-rdk
+  version: 0.1.0
+digest: sha256:b4b8f935e6666b8f707c49151800254e65b4ba180d9421b0e84bee3ab0b35731
+generated: "2024-07-19T10:16:42.625289+03:00"

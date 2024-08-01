@@ -1,0 +1,13 @@
+redis:
+  architecture: standalone
+  auth:
+    enabled: true
+    password: password
+  replica:
+    enabled: false
+    replicaCount: 0
+    resources:
+      requests:
+        memory: "256Mi"
+      limits:
+        memory: "512Mi"
