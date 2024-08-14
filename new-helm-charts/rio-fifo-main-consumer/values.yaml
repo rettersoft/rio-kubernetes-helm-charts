@@ -1,0 +1,74 @@
+fullnameOverride: rio-fifo-main-consumer
+replicaCount: 1
+image:
+  repository: 130575395405.dkr.ecr.eu-west-2.amazonaws.com/retter-poc-rdk
+  tag: 18
+  pullPolicy: Always
+
+imagePullSecrets:
+  enabled: true
+  secrets: 
+    - name: ecr-secret
+
+projectId: projectid3
+
+queues:
+  - name: SampleClass
+    class: SampleClass
+    partitions: 4
+    consumers:
+      - 0-2
+      - 2-4
+  - name: HelloClass
+    class: HelloClass
+    partitions: 4
+    consumers:
+      - 0-2
+      - 2-4
+env:
+  PROJECT_ID: projectid3
+  RABBITMQ_HOST: 'rabbitmq.rabbitmq.svc.cluster.local'
+  RABBITMQ_PORT: 5672
+  RABBITMQ_USERNAME: 'user'
+  RABBITMQ_PASSWORD: 'BA0rVrYXeqrtycJk'
+  REDIS_MODE: 'standalone'
+  REDIS_HOST: 'redis-master.redis.svc.cluster.local'
+  REDIS_PORT: 6379
+  REDIS_PASSWORD: 'WRdQjY22BV'
+  SCHEDULER_REDIS_MODE: 'standalone'
+  SCHEDULER_REDIS_HOST: 'scheduler-redis-master.default.svc.cluster.local'
+  SCHEDULER_REDIS_PORT: 6379
+  SCHEDULER_REDIS_PASSWORD: 'password'
+  MONGO_CONNECTION_STRING: 'mongodb://root:YkboFDlqzU@mongodb.mongodb.svc.cluster.local:27017/admin'
+  USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
+  SCHEDULER_API_URL: 'http://rio-scheduler-api-rio-scheduler-api.default.svc.cluster.local'
+  RDK_URL: 'http://rio-core-rio-rdk.default.svc.cluster.local'
+  RIO_CLASS_QUEUE_NAME: 
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  debugPort: 9229
+
+ingress:
+  enabled: true
+  path: /
+
+autoscaling:
+  enabled: false
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/fifo.js
+
+initContainers:
+  enabled: false
