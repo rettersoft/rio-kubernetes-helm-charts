@@ -46,6 +46,8 @@ resources:
 nodeSelector: {}
 projectId: projectid3
 
+ingress:
+  enabled: false
 
 tolerations: []
 

@@ -1,0 +1,30 @@
+apiVersion: v2
+name: rio-runtime
+description: A Helm chart for deploying multiple applications with a common template
+type: application
+version: 1.0.0
+appVersion: "1.0.0"
+
+
+dependencies:
+  - name: rio-api
+    version: 1.0.0
+    repository: file://../rio-api
+  - name: rio-fifo-main-consumer
+    version: 1.0.0
+    repository: file://../rio-fifo-main-consumer
+  - name: rio-fifo-proxy-consumer
+    version: 1.0.0
+    repository: file://../rio-fifo-proxy-consumer
+  - name: rio-rdk
+    version: 1.0.0
+    repository: file://../rio-rdk
+  - name: rio-scheduler-api
+    version: 1.0.0
+    repository: file://../rio-scheduler-api
+  - name: rio-scheduler-task-consumer
+    version: 1.0.0
+    repository: file://../rio-scheduler-task-consumer
+  - name: rio-scheduler-cron-consumer
+    version: 1.0.0
+    repository: file://../rio-scheduler-cron-consumer
