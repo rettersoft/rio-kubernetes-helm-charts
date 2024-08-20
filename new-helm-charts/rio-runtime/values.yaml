@@ -29,16 +29,16 @@ env:
   RABBITMQ_HOST: 'rabbitmq.rabbitmq.svc.cluster.local'
   RABBITMQ_PORT: 5672
   RABBITMQ_USERNAME: 'user'
-  RABBITMQ_PASSWORD: 'BA0rVrYXeqrtycJk'
+  RABBITMQ_PASSWORD: ''
   REDIS_MODE: 'standalone'
   REDIS_HOST: 'redis-master.redis.svc.cluster.local'
   REDIS_PORT: 6379
-  REDIS_PASSWORD: 'WRdQjY22BV'
+  REDIS_PASSWORD: ''
   SCHEDULER_REDIS_MODE: 'standalone'
   SCHEDULER_REDIS_HOST: 'scheduler-redis-master.default.svc.cluster.local'
   SCHEDULER_REDIS_PORT: 6379
   SCHEDULER_REDIS_PASSWORD: 'password'
-  MONGO_CONNECTION_STRING: 'mongodb://root:YkboFDlqzU@mongodb.mongodb.svc.cluster.local:27017/admin'
+  MONGO_CONNECTION_STRING: ''
   USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
   SCHEDULER_API_URL: 'http://rio-scheduler-api-rio-scheduler-api.default.svc.cluster.local'
   RDK_URL: 'http://rio-core-rio-rdk.default.svc.cluster.local'
