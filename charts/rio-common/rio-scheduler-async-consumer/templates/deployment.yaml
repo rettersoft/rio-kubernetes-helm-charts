@@ -1,40 +1,42 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rio-scheduler-dashboard.fullname" . }}
+  name: {{ include "rio-scheduler-async-consumer.fullname" . }}
   labels:
-    app: {{ include "rio-scheduler-dashboard.fullname" . }}
+    app: {{ include "rio-scheduler-async-consumer.fullname" . }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "rio-scheduler-dashboard.fullname" . }}
+      app: {{ include "rio-scheduler-async-consumer.fullname" . }}
   template:
     metadata:
       labels:
-        app: {{ include "rio-scheduler-dashboard.fullname" . }}
+        app: {{ include "rio-scheduler-async-consumer.fullname" . }}
+      annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
       containers:
-        - name: {{ include "rio-scheduler-dashboard.fullname" . }}
+        - name: {{ include "rio-scheduler-async-consumer.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
           {{- if .Values.command }}
           command: {{ .Values.command | toYaml | nindent 12 }}
           {{- end }}
           env:
             - name: SERVICE_NAME
-              value: {{ include "rio-scheduler-dashboard.name" . }}
+              value: {{ include "rio-scheduler-async-consumer.name" . }}
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
-            - name: REDIS_HOST
-              value: "{{ .Values.global.env.SCHEDULER_REDIS_HOST }}"
-            - name: REDIS_PORT
-              value: "{{ .Values.global.env.SCHEDULER_REDIS_PORT }}"
-            - name: REDIS_PASSWORD
-              value: "{{ .Values.global.env.SCHEDULER_REDIS_PASSWORD }}"
-            - name: QUEUES
-              value: "{{ .Values.queues | join "," }}"
+            - name: REDIS_CONFIG
+              value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
+            {{- range $key, $value := .Values.global.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.global.envFrom }}
+            {{- toYaml .Values.global.envFrom | nindent 12 }}
+            {{- end }}
           ports:
             - containerPort: {{ .Values.service.targetPort }}
             - containerPort: {{ .Values.service.debugPort }}
@@ -48,3 +50,10 @@ spec:
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
       tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
       affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys

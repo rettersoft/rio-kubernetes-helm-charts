@@ -1,0 +1,36 @@
+replicaCount: 1
+image:
+  repository: rio-base-image
+  tag: 11
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  debugPort: 9229
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/scheduler-async-consumer.js
+
+
+autoscaling:
+  enabled: true
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80

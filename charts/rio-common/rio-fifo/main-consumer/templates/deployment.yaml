@@ -44,6 +44,10 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+          envFrom:
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+            {{- end }}
           ports:
             - containerPort: {{ $.Values.service.targetPort }}
             - containerPort: {{ $.Values.service.debugPort }}

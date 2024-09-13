@@ -34,6 +34,10 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+          envFrom:
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+            {{- end }}
       containers:
         - name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
@@ -54,6 +58,10 @@ spec:
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
             {{- end }}
           ports:
             - containerPort: {{ $.Values.service.targetPort }}

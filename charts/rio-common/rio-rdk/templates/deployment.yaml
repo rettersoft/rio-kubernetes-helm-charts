@@ -40,6 +40,10 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+          envFrom:
+            {{- if .Values.global.envFrom }}
+            {{- toYaml .Values.global.envFrom | nindent 12 }}
+            {{- end }}
       nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
       tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
       affinity: {{ toYaml .Values.affinity | nindent 8 }}
