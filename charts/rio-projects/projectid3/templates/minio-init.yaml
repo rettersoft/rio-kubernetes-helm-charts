@@ -1,0 +1,32 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: minio-init-{{ now | date "20060102150405" }}
+spec:
+  template:
+    spec:
+      containers:
+        - name: mc
+          image: minio/mc:latest
+          command: ["/bin/bash", "-c"]
+          args:
+            - |
+              set -euo pipefail
+
+              # Set MinIO alias
+              mc alias set myminio/ https://{{ .Values.global.env.MINIO_HOST }} {{ .Values.global.secret.MINIO_USERNAME }} {{ .Values.global.secret.MINIO_PASSWORD }}
+
+              # Add user to MinIO
+              mc admin user add myminio {{ .Values.global.env.MINIO_ACCESS_KEY }} {{ .Values.global.env.MINIO_SECRET_KEY }}
+
+              # Create the bucket if it doesn't exist
+              mc ls myminio/{{ .Values.global.env.PROJECT_ID }} >/dev/null 2>&1 || mc mb myminio/{{ .Values.global.env.PROJECT_ID }}
+
+              # Attach policy if not present
+              mc admin user policy myminio {{ .Values.global.env.PROJECT_ID }} > /dev/null 2>&1 || \
+              (mc admin policy attach myminio readwrite --user={{ .Values.global.env.PROJECT_ID }} && echo "Policy 'readwrite' attached to user")
+
+              # Warning
+              echo "this user has access to every bucket ! be careful with that it was development purposes only and for the sake of simplicity"
+      restartPolicy: Never
+  backoffLimit: 4

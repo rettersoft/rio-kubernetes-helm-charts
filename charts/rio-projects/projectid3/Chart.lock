@@ -8,6 +8,9 @@ dependencies:
 - name: rio-scheduler-task-consumer
   repository: file://../../rio-common/rio-scheduler-task-consumer
   version: 0.1.0
+- name: rio-scheduler-async-consumer
+  repository: file://../../rio-common/rio-scheduler-async-consumer
+  version: 0.1.0
 - name: rio-scheduler-cron-consumer
   repository: file://../../rio-common/rio-scheduler-cron-consumer
   version: 0.1.0
@@ -17,5 +20,5 @@ dependencies:
 - name: rio-rdk
   repository: file://../../rio-common/rio-rdk
   version: 0.1.0
-digest: sha256:b4b8f935e6666b8f707c49151800254e65b4ba180d9421b0e84bee3ab0b35731
-generated: "2024-07-19T10:16:42.625289+03:00"
+digest: sha256:7fc98e193f6857c5e9cbb63e0759ed5c2a13561a38794c60276ffdf6ccf4de13
+generated: "2024-07-29T17:05:45.483646+03:00"

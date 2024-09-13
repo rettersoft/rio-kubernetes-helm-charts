@@ -28,26 +28,27 @@ tolerations: []
 
 affinity: {}
 global:
+  podAnnotations:
   env:
     PROJECT_ID: projectid3
-    RABBITMQ_HOST: 'rabbitmq.default.svc.cluster.local'
-    RABBITMQ_PORT: 5672
-    RABBITMQ_USERNAME: 'new-user'
-    RABBITMQ_PASSWORD: 'new-password'
-    REDIS_MODE: 'standalone'
-    REDIS_HOST: 'redis-master.default.svc.cluster.local'
-    REDIS_PORT: 6379
-    REDIS_PASSWORD: 'password'
-    SCHEDULER_REDIS_HOST: 'scheduler-redis-master.default.svc.cluster.local'
-    SCHEDULER_REDIS_PORT: 6379
-    SCHEDULER_REDIS_PASSWORD: 'password'
-    MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
     USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
     SCHEDULER_API_URL: 'http://projectid3-rio-scheduler-api.default.svc.cluster.local'
     RDK_URL: 'http://projectid3-rio-rdk.default.svc.cluster.local'
-  podAnnotations: {}
+  envFrom:
+    - secretRef:
+       name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
 
-
+  secret:
+    MINIO_USERNAME: "minio"
+    MINIO_PASSWORD: "minio123"
 
 
 rio-api:
@@ -67,10 +68,10 @@ rio-api:
   resources:
     limits:
       cpu: 100m
-      memory: 128Mi
+      memory: 228Mi
     requests:
       cpu: 100m
-      memory: 128Mi
+      memory: 228Mi
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
@@ -88,6 +89,20 @@ rio-scheduler-task-consumer:
   command:
     - node
     - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+
+rio-scheduler-async-consumer:
+  image:
+    repository: projectid3
+    tag: 115
+    pullPolicy: IfNotPresent
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-async-consumer.js
 
 rio-scheduler-cron-consumer:
   image:
@@ -123,13 +138,22 @@ rio-scheduler-dashboard:
     tag: latest
     pullPolicy: Always
   queues:
+    - projectid3_async
     - projectid3_task
     - projectid3_cron
+
 rio-rdk:
   image:
     repository: projectid3
     tag: 115
     pullPolicy: IfNotPresent
+  resources:
+    limits:
+      cpu: 100m
+      memory: 228Mi
+    requests:
+      cpu: 100m
+      memory: 228Mi
   autoscaling:
     enabled: true
     minReplicas: 1
