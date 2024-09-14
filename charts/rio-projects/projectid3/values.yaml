@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: 10.110.227.48:5000
+  repository: ${REPOSITORY}
   tag: ${IMAGE_TAG}
   pullPolicy: IfNotPresent
 command:
@@ -53,7 +53,7 @@ global:
 
 rio-api:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   ingress:
@@ -78,7 +78,7 @@ rio-api:
 
 rio-scheduler-task-consumer:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -92,7 +92,7 @@ rio-scheduler-task-consumer:
 
 rio-scheduler-async-consumer:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -106,7 +106,7 @@ rio-scheduler-async-consumer:
 
 rio-scheduler-cron-consumer:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -120,7 +120,7 @@ rio-scheduler-cron-consumer:
 
 rio-scheduler-api:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -144,7 +144,7 @@ rio-scheduler-dashboard:
 
 rio-rdk:
   image:
-    repository: 10.110.227.48:5000
+    repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   resources:
