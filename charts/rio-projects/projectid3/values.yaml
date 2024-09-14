@@ -1,7 +1,7 @@
 replicaCount: 1
 
 image:
-  repository: ${REPOSITORY}
+  repository: 10.110.227.48:5000
   tag: ${IMAGE_TAG}
   pullPolicy: IfNotPresent
 command:
@@ -30,10 +30,10 @@ affinity: {}
 global:
   podAnnotations:
   env:
-    PROJECT_ID: projectid3
-    USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
-    SCHEDULER_API_URL: 'http://projectid3-rio-scheduler-api.default.svc.cluster.local'
-    RDK_URL: 'http://projectid3-rio-rdk.default.svc.cluster.local'
+    PROJECT_ID: ${PROJECT_ID}
+    USER_CODE_URL: 'http://${PROJECT_ID}-user-code.default.svc.cluster.local'
+    SCHEDULER_API_URL: 'http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local'
+    RDK_URL: 'http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local'
   envFrom:
     - secretRef:
        name: rabbitmq-secrets
@@ -53,12 +53,12 @@ global:
 
 rio-api:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   ingress:
     enabled: true
-    path: /projectid3
+    path: /${PROJECT_ID}
     canary: false
   autoscaling:
     enabled: true
@@ -78,7 +78,7 @@ rio-api:
 
 rio-scheduler-task-consumer:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -92,7 +92,7 @@ rio-scheduler-task-consumer:
 
 rio-scheduler-async-consumer:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -106,7 +106,7 @@ rio-scheduler-async-consumer:
 
 rio-scheduler-cron-consumer:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -120,7 +120,7 @@ rio-scheduler-cron-consumer:
 
 rio-scheduler-api:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   autoscaling:
@@ -138,13 +138,13 @@ rio-scheduler-dashboard:
     tag: latest
     pullPolicy: Always
   queues:
-    - projectid3_async
-    - projectid3_task
-    - projectid3_cron
+    - ${PROJECT_ID}_async
+    - ${PROJECT_ID}_task
+    - ${PROJECT_ID}_cron
 
 rio-rdk:
   image:
-    repository: ${REPOSITORY}
+    repository: 10.110.227.48:5000
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
   resources:
