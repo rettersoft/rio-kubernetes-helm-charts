@@ -11,11 +11,11 @@ global:
       consumers:
         - 0-1
   env:
-    PROJECT_ID: projectid3
+    PROJECT_ID: ${$PROJECT_ID}
     MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
-    USER_CODE_URL: 'http://projectid3-user-code.default.svc.cluster.local'
-    SCHEDULER_API_URL: 'http://projectid3-rio-scheduler-api.default.svc.cluster.local'
-    RDK_URL: 'http://projectid3-rio-rdk.default.svc.cluster.local'
+    USER_CODE_URL: 'http://${$PROJECT_ID}-user-code.default.svc.cluster.local'
+    SCHEDULER_API_URL: 'http://${$PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local'
+    RDK_URL: 'http://${$PROJECT_ID}-rio-rdk.default.svc.cluster.local'
   envFrom:
     - secretRef:
         name: rabbitmq-secrets
@@ -29,6 +29,6 @@ global:
         name: scheduler-redis-secrets
   podAnnotations: { }
   image:
-    repository: projectid3
-    tag: 116
+    repository: ${REPOSITORY}
+    tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
