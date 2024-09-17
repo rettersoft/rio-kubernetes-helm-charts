@@ -42,10 +42,13 @@ global:
         name: redis-secrets
     - secretRef:
         name: scheduler-redis-secrets
-
   secret:
     MINIO_USERNAME: "minio"
     MINIO_PASSWORD: "minio123"
+  image:
+    repository: ${REPOSITORY}
+    tag: ${IMAGE_TAG}
+    pullPolicy: IfNotPresent
 
 
 rio-api:
