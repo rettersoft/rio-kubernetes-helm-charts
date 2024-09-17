@@ -54,7 +54,6 @@ global:
 rio-api:
   ingress:
     enabled: true
-    path: /${PROJECT_ID}
     canary: false
   autoscaling:
     enabled: true

@@ -9,7 +9,7 @@ spec:
       http:
         paths:
           - pathType: Prefix
-            path: {{ .Values.global.env.PROJECT_ID }}
+            path: /{{ .Values.global.env.PROJECT_ID }}
             backend:
               service:
                 name: {{ include "rio-api.fullname" . }}
