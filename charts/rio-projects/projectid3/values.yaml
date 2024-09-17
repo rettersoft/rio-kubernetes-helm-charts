@@ -25,10 +25,6 @@ tolerations: []
 
 affinity: {}
 global:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   podAnnotations:
   env:
     PROJECT_ID: ${PROJECT_ID}
@@ -53,10 +49,6 @@ global:
 
 
 rio-api:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   ingress:
     enabled: true
     path: /${PROJECT_ID}
@@ -78,10 +70,6 @@ rio-api:
     - /opt/core-extension/dist/src/bin/api.js
 
 rio-scheduler-task-consumer:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -92,10 +80,6 @@ rio-scheduler-task-consumer:
     - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
 
 rio-scheduler-async-consumer:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -106,10 +90,6 @@ rio-scheduler-async-consumer:
     - /opt/core-extension/dist/src/bin/scheduler-async-consumer.js
 
 rio-scheduler-cron-consumer:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -120,10 +100,6 @@ rio-scheduler-cron-consumer:
     - /opt/core-extension/dist/src/bin/scheduler-cron-consumer.js
 
 rio-scheduler-api:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   autoscaling:
     enabled: true
     minReplicas: 1
@@ -144,10 +120,6 @@ rio-scheduler-dashboard:
     - ${PROJECT_ID}_cron
 
 rio-rdk:
-  image:
-    repository: ${REPOSITORY}
-    tag: ${IMAGE_TAG}
-    pullPolicy: IfNotPresent
   resources:
     limits:
       cpu: 100m
