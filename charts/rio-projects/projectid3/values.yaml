@@ -1,9 +1,6 @@
 replicaCount: 1
 
-image:
-  repository: ${REPOSITORY}
-  tag: ${IMAGE_TAG}
-  pullPolicy: IfNotPresent
+
 command:
   - node
   - /opt/core-extension/dist/src/bin/user-code.js
@@ -28,6 +25,10 @@ tolerations: []
 
 affinity: {}
 global:
+  image:
+    repository: ${REPOSITORY}
+    tag: ${IMAGE_TAG}
+    pullPolicy: IfNotPresent
   podAnnotations:
   env:
     PROJECT_ID: ${PROJECT_ID}
