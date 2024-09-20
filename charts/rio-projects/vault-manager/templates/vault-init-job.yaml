@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-init-vault-secret
+  #annotations:
+  #  "helm.sh/hook": post-install
+  #  "helm.sh/hook-weight": "-5"
+  #  "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  #backoffLimit: 4
+  #activeDeadlineSeconds: 300
+  template:
+    metadata:
+      labels:
+        name: {{ .Release.Name }}-init-vault-secret
+    spec:
+      serviceAccountName: vault-auth
+      #restartPolicy: OnFailure
+      containers:
+        - name: vault-initializer
+          image: hashicorp/vault:1.9.2
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              echo "Starting Vault initialization job..."
+              /scripts/init-vault.sh
+              echo "Vault initialization job completed. sleeping.."
+              sleep 5000
+          volumeMounts:
+            - name: script
+              mountPath: /scripts
+          env:
+            - name: VAULT_ADDR
+              value: {{ .Values.vault.address }}
+            - name: SECRET_VERSION
+              value: {{ .Values.vault.secretVersion | quote }}
+            - name: VAULT_SKIP_VERIFY
+              value: "true"
+      volumes:
+        - name: script
+          configMap:
+            name: {{ .Release.Name }}-vault-init-script
+            defaultMode: 0755
+
+  selector:
+    matchLabels:
+      name: {{ .Release.Name }}-init-vault-secret

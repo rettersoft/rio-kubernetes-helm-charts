@@ -1,0 +1,43 @@
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-vault-init-script
+data:
+  init-vault.sh: |
+    #!/bin/sh
+    set -e
+
+    vault login root
+
+    echo "Enabling KV secrets engine..."
+    vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
+
+    echo "Updating secrets in Vault..."
+  {{ range .Values.vault.initialSecrets }}
+    SECRET_PATH="{{ $.Values.vault.kvPath }}/{{ .path }}"
+
+    echo "Checking if secret exists at $SECRET_PATH..."
+    if vault kv get $SECRET_PATH >/dev/null 2>&1; then
+      echo "Secret exists. Retrieving current values..."
+      CURRENT_DATA=$(vault kv get -format=json $SECRET_PATH | sed -n 's/.*"data":\([^}]*\)}.*/\1/p')
+    else
+      echo "Secret doesn't exist. Initializing empty data..."
+      CURRENT_DATA="{}"
+    fi
+
+    NEW_DATA='{{ .data | toJson }}'
+
+    if [ "$CURRENT_DATA" != "$NEW_DATA" ]; then
+      echo "Updating secret at $SECRET_PATH..."
+      echo $NEW_DATA | vault kv put $SECRET_PATH -
+      echo "Secret updated successfully in Vault"
+    else
+      echo "Secret at $SECRET_PATH is up to date. No changes made."
+    fi
+  {{ end }}
+
+    echo "Vault initialization script completed."
+    echo "Waiting for 30 seconds to ensure job completion is registered..."
+    sleep 30
+    echo "Wait completed. Exiting."

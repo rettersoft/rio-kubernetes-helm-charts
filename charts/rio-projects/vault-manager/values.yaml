@@ -1,0 +1,35 @@
+
+vault:
+  role: "vault-auth"
+  kvPath: "secret"
+  address: "http://vault:8200"
+  secretVersion: "1"
+
+  initialSecrets:
+    - path: "RABBITMQ"
+      data:
+        RABBITMQ_HOST: 'rabbitmq.default.svc.cluster.local'
+        RABBITMQ_PORT: "5672"
+        RABBITMQ_USERNAME: 'new-user'
+        RABBITMQ_PASSWORD: 'new-password'
+    - path: "REDIS"
+      data:
+        REDIS_MODE: 'standalone'
+        REDIS_HOST: 'redis-master.default.svc.cluster.local'
+        REDIS_PORT: 6379
+        REDIS_PASSWORD: 'password'
+    - path: "SCHEDULER_REDIS"
+      data:
+        SCHEDULER_REDIS_MODE: 'standalone'
+        SCHEDULER_REDIS_HOST: 'redis-master.default.svc.cluster.local'
+        SCHEDULER_REDIS_PORT: 6379
+        SCHEDULER_REDIS_PASSWORD: 'password'
+    - path: "MONGO"
+      data:
+        MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
+    - path: "MINIO"
+      data:
+        MINIO_HOST: 'minio.minio-tenant.svc.cluster.local'
+        MINIO_PORT: 443
+        MINIO_ACCESS_KEY: 'projectid3'
+        MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
