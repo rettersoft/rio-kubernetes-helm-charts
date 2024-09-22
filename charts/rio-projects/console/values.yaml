@@ -29,9 +29,6 @@ tolerations: []
 
 affinity: {}
 
-command:
-  - node
-  - /opt/core-extension/dist/src/bin/api.js
 
 autoscaling:
   enabled: true
