@@ -27,7 +27,6 @@ affinity: {}
 global:
   podAnnotations:
   env:
-    TEST_OTP: "123456"
     PROJECT_ID: ${PROJECT_ID}
     USER_CODE_URL: 'http://${PROJECT_ID}-user-code.default.svc.cluster.local'
     SCHEDULER_API_URL: 'http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local'
