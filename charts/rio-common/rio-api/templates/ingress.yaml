@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: {{ include "rio-api.fullname" . }}
 spec:
+  tls:
+    - hosts:
+        - localhost
+      secretName: my-tls-secret
   ingressClassName: nginx
   rules:
     - host: localhost
