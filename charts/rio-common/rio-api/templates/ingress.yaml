@@ -3,7 +3,7 @@ kind: Ingress
 metadata:
   name: {{ include "rio-api.fullname" . }}
   annotations:
-    nginx.ingress.kubernetes.io/force-ssl-redirect: "true"  # This forces HTTP to HTTPS redirection
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
   tls:
     - hosts:
