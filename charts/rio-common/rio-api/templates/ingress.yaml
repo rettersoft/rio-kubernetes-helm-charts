@@ -5,10 +5,10 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
-{{/*  tls:*/}}
-{{/*    - hosts:*/}}
-{{/*        - localhost*/}}
-{{/*      secretName: my-cert-tls*/}}
+  tls:
+    - hosts:
+        - localhost
+      secretName: my-cert-tls
   ingressClassName: nginx
   rules:
     - host: localhost
