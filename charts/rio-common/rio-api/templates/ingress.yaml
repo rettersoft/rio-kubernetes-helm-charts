@@ -3,19 +3,15 @@ kind: Ingress
 metadata:
   name: {{ include "rio-api.fullname" . }}
   annotations:
-    nginx.ingress.kubernetes.io/configuration-snippet: |
-      location / {
-        return 200 'Hello';
-        add_header Content-Type text/plain;
-      }
+    cert-manager.io/issuer: "letsencrypt-prod"
 spec:
   tls:
     - hosts:
-        - localhost
-      secretName: my-tls-secret
+        - localhost.com
+      secretName: my-cert-tls
   ingressClassName: nginx
   rules:
-    - host: localhost
+    - host: localhost.com
       http:
         paths:
           - pathType: Prefix
@@ -25,5 +21,3 @@ spec:
                 name: {{ include "rio-api.fullname" . }}
                 port:
                   number: 80
-
-
