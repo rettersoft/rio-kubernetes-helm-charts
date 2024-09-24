@@ -7,11 +7,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - localhost
+        - localhost.com
       secretName: my-cert-tls
   ingressClassName: nginx
   rules:
-    - host: localhost
+    - host: localhost.com
       http:
         paths:
           - pathType: Prefix
