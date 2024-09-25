@@ -3,6 +3,10 @@ kind: Ingress
 metadata:
   name: {{ include "console.fullname" . }}
 spec:
+  tls:
+    - hosts:
+        - console.localhost
+      secretName: my-cert-tls
   ingressClassName: nginx
   rules:
     - host: console.localhost
