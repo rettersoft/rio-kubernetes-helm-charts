@@ -42,6 +42,8 @@ global:
         name: redis-secrets
     - secretRef:
         name: scheduler-redis-secrets
+    - secretRef:
+        name: config
   secret:
     MINIO_USERNAME: "minio"
     MINIO_PASSWORD: "minio123"
