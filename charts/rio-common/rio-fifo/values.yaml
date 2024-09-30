@@ -1,5 +1,10 @@
 global:
   queues:
+    - name: state_stream_root #for testing
+      class: state_stream_root
+      partitions: 1
+      consumers:
+        - 0-1
     - name: MainTests
       class: MainTests
       partitions: 1
