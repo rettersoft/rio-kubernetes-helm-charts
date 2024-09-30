@@ -43,7 +43,7 @@ global:
     - secretRef:
         name: scheduler-redis-secrets
     - secretRef:
-        name: config
+        name: config-storage
   secret:
     MINIO_USERNAME: "minio"
     MINIO_PASSWORD: "minio123"
