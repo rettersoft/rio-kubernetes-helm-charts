@@ -1,7 +1,7 @@
 global:
   queues:
-    - name: state_stream_root_firestore #for testing
-      class: state_stream_root_firestore
+    - name: state_stream
+      class: state_stream
       partitions: 1
       consumers:
         - 0-1
