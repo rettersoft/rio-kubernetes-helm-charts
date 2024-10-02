@@ -1,5 +1,7 @@
-{{- range $index, $queue := .Values.global.queues }}
-# If you were to use .Values within a range loop, it might cause unintended behavior
+#{{- range $index, $queue := .Values.global.queues }}
+{{- $combinedList := concat .Values.global.queues .Values.global.destinations }}
+{{- range $index, $queue := $combinedList }}
+  # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 ---
