@@ -13,3 +13,6 @@ dependencies:
   - name: proxy-consumer
     version: 0.1.0
     repository: file://./proxy-consumer
+  - name: destination-consumer
+    version: 0.1.0
+    repository: file://./destination-consumer
