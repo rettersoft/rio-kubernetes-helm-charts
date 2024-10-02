@@ -1,20 +1,12 @@
 #{{- range $index, $queue := .Values.global.queues }}
 {{- $combinedList := list }}
-
-{{- /* Append items from .Values.global.queues */ -}}
-{{- range $item := .Values.global.queues }}
-{{- $combinedList = append $combinedList $item }}
+{{- range $item := .Values.global.queues | default (list) }}
+  {{- $combinedList = append $combinedList $item }}
 {{- end }}
-
-{{- /* Append items from .Values.global.destinations */ -}}
-{{- range $item := .Values.global.destinations }}
-{{- $combinedList = append $combinedList $item }}
+{{- range $item := .Values.global.destinations | default (list) }}
+  {{- $combinedList = append $combinedList $item }}
 {{- end }}
-
-{{- /* Iterate over the combined list */ -}}
-{{- range $index, $queue := $combinedList }}
-
-  # If you were to use .Values within a range loop, it might cause unintended behavior
+# If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 ---

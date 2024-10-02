@@ -5,5 +5,8 @@ dependencies:
 - name: proxy-consumer
   repository: file://./proxy-consumer
   version: 0.1.0
-digest: sha256:47d287ab7b709dc04aa5538038c0fc183ae5598b38d85e752dda26149fa18c1d
-generated: "2024-07-19T11:58:03.310478+03:00"
+- name: destination-consumer
+  repository: file://./destination-consumer
+  version: 0.1.0
+digest: sha256:4b703f36219ec2ed69111f46b639920c63675cf71e1d9d8e18789034b1c6e8f7
+generated: "2024-10-02T09:55:39.938879+03:00"
