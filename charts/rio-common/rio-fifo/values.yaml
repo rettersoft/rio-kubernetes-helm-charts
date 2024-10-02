@@ -33,6 +33,8 @@ global:
         name: redis-secrets
     - secretRef:
         name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
   podAnnotations: { }
   image:
     repository: ${REPOSITORY}
