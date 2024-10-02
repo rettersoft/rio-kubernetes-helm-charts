@@ -1,10 +1,5 @@
 global:
   queues:
-    - name: state_stream_firestore
-      class: state_stream_firestore
-      partitions: 1
-      consumers:
-        - 0-1
     - name: MainTests
       class: MainTests
       partitions: 1
@@ -12,6 +7,12 @@ global:
         - 0-1
     - name: FifoTests
       class: FifoTests
+      partitions: 1
+      consumers:
+        - 0-1
+  destinations:
+    - name: state_stream_firestore
+      class: state_stream_firestore
       partitions: 1
       consumers:
         - 0-1
