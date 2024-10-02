@@ -3,7 +3,7 @@
 {{- range $item := $.Values.global.queues }}
   {{- $combinedList = append $combinedList $item }}
 {{- end }}
-{{- range $item := $.Values.global.destinations }}
+{{- range $item := Values.global.destinations }}
   {{- $combinedList = append $combinedList $item }}
 {{- end }}
 # If you were to use .Values within a range loop, it might cause unintended behavior
