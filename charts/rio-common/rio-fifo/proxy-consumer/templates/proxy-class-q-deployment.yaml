@@ -1,0 +1,86 @@
+{{- range $index, $queue := .Values.global.queues }}
+# If you were to use .Values within a range loop, it might cause unintended behavior
+# because .Values would be scoped to the loop's current item if not override,
+# which might not have the .Values fields:
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+  labels:
+    app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+      annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
+    spec:
+      dnsPolicy: ClusterFirst
+      initContainers:
+        - name: queue-init
+          image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
+          command: ["node", "/opt/core-extension/dist/src/init/init-fifo.js"]
+          env:
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_PARTITIONS
+              value: {{ $queue.partitions | quote }}
+            {{- range $key, $value := $.Values.global.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+            {{- end }}
+      containers:
+        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+          image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
+          {{- if $.Values.command }}
+          command: {{ $.Values.command | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ include "proxy-consumer.name" $ }}
+            - name: RELEASE_NAME
+              value: {{ $.Release.Name }}
+            - name: REDIS_CONFIG
+              value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_CONSUMER_PARTITIONS
+              value: {{ $queue.partitions | quote }}
+            {{- range $key, $value := $.Values.global.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: {{ $.Values.service.targetPort }}
+            - containerPort: {{ $.Values.service.debugPort }}
+          resources:
+            limits:
+              cpu: {{ $.Values.resources.limits.cpu }}
+              memory: {{ $.Values.resources.limits.memory }}
+            requests:
+              cpu: {{ $.Values.resources.requests.cpu }}
+              memory: {{ $.Values.resources.requests.memory }}
+      nodeSelector: {{ toYaml $.Values.nodeSelector | nindent 8 }}
+      tolerations: {{ toYaml $.Values.tolerations | nindent 8 }}
+      affinity: {{ toYaml $.Values.affinity | nindent 8 }}
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+{{- end }}
