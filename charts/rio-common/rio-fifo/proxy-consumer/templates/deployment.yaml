@@ -1,7 +1,17 @@
 #{{- range $index, $queue := .Values.global.queues }}
-{{- $queues := .Values.global.queues | default (list) }}
-{{- $destinations := .Values.global.destinations | default (list) }}
-{{- $combinedList := append $queues $destinations... }}
+{{- $combinedList := list }}
+
+{{- /* Append items from .Values.global.queues */ -}}
+{{- range $item := .Values.global.queues }}
+{{- $combinedList = append $combinedList $item }}
+{{- end }}
+
+{{- /* Append items from .Values.global.destinations */ -}}
+{{- range $item := .Values.global.destinations }}
+{{- $combinedList = append $combinedList $item }}
+{{- end }}
+
+{{- /* Iterate over the combined list */ -}}
 {{- range $index, $queue := $combinedList }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
