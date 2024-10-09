@@ -48,6 +48,9 @@ spec:
             {{- if $.Values.global.envFrom }}
             {{- toYaml $.Values.global.envFrom | nindent 12 }}
             {{- end }}
+            {{- if $.Values.envFrom }}
+            {{- toYaml $.Values.envFrom | nindent 12 }}
+            {{- end }}
           ports:
             - containerPort: {{ $.Values.service.targetPort }}
             - containerPort: {{ $.Values.service.debugPort }}
