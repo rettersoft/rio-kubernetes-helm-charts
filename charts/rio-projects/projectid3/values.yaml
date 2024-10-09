@@ -31,19 +31,6 @@ global:
     USER_CODE_URL: 'http://${PROJECT_ID}-user-code.default.svc.cluster.local'
     SCHEDULER_API_URL: 'http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local'
     RDK_URL: 'http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local'
-  envFrom:
-    - secretRef:
-       name: rabbitmq-secrets
-    - secretRef:
-        name: mongo-secrets
-    - secretRef:
-        name: minio-secrets
-    - secretRef:
-        name: redis-secrets
-    - secretRef:
-        name: scheduler-redis-secrets
-    - secretRef:
-        name: config-storage
   secret:
     MINIO_USERNAME: "minio"
     MINIO_PASSWORD: "minio123"
@@ -54,6 +41,19 @@ global:
 
 
 rio-api:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
   ingress:
     enabled: true
     canary: false
@@ -72,58 +72,21 @@ rio-api:
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
-
-rio-scheduler-task-consumer:
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-  command:
-    - node
-    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
-
-rio-scheduler-async-consumer:
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-  command:
-    - node
-    - /opt/core-extension/dist/src/bin/scheduler-async-consumer.js
-
-rio-scheduler-cron-consumer:
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-  command:
-    - node
-    - /opt/core-extension/dist/src/bin/scheduler-cron-consumer.js
-
-rio-scheduler-api:
-  autoscaling:
-    enabled: true
-    minReplicas: 1
-    maxReplicas: 10
-    targetCPUUtilizationPercentage: 80
-  command:
-    - node
-    - /opt/core-extension/dist/src/bin/scheduler-api.js
-
-rio-scheduler-dashboard:
-  image:
-    repository: mstkk/bulldashboard
-    tag: latest
-    pullPolicy: Always
-  queues:
-    - ${PROJECT_ID}_async
-    - ${PROJECT_ID}_task
-    - ${PROJECT_ID}_cron
-
+    -
 rio-rdk:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
   resources:
     limits:
       cpu: 100m
@@ -139,3 +102,115 @@ rio-rdk:
   command:
     - node
     - /opt/core-extension/dist/src/bin/rdk.js
+
+rio-scheduler-api:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-api.js
+
+rio-scheduler-async-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-async-consumer.js
+
+rio-scheduler-cron-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-cron-consumer.js
+
+rio-scheduler-task-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: minio-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    enabled: true
+    minReplicas: 1
+    maxReplicas: 10
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+
+
+
+
+rio-scheduler-dashboard:
+  envFrom:
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: scheduler-redis-secrets
+  image:
+    repository: mstkk/bulldashboard
+    tag: latest
+    pullPolicy: Always
+  queues:
+    - ${PROJECT_ID}_async
+    - ${PROJECT_ID}_task
+    - ${PROJECT_ID}_cron
+
+
