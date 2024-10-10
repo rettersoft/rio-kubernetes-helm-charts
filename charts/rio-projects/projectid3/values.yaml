@@ -11,6 +11,8 @@ service:
   targetPort: 80
   debugPort: 9229
 
+extraEnvFromSecret:
+
 resources:
   limits:
     cpu: 500m
