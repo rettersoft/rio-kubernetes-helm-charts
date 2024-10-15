@@ -216,3 +216,5 @@ rio-scheduler-dashboard:
     - ${PROJECT_ID}_cron
 
 
+vault:
+  kvPath: "secret"
