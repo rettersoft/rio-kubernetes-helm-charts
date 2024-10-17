@@ -6,3 +6,10 @@ spec:
   provider:
     kubernetes:
       remoteNamespace: default
+      server:
+        apiServerURL: https://kubernetes.default.svc
+        caProvider:
+          type: ConfigMap
+          name: kube-root-ca.crt
+          namespace: kube-public
+          key: ca.crt
