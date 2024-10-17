@@ -6,6 +6,10 @@ spec:
   provider:
     kubernetes:
       remoteNamespace: default
+      auth:
+        serviceAccount:
+          name: vault-auth
+          namespace: default
       server:
         apiServerURL: https://kubernetes.default.svc
         caProvider:
