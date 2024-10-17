@@ -5,6 +5,7 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
+  #TODO host should be dynamic
   tls:
     - hosts:
         - localhost

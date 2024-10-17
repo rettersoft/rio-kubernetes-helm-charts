@@ -3,6 +3,7 @@ kind: Ingress
 metadata:
   name: {{ include "console.fullname" . }}
 spec:
+  # TODO should be dynamic
   tls:
     - hosts:
         - console.localhost
