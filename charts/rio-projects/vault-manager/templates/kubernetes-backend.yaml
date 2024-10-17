@@ -5,8 +5,4 @@ metadata:
 spec:
   provider:
     kubernetes:
-      auth:
-        # Use the operator's service account for authentication
-        serviceAccount:
-          name: external-secrets-operator
       remoteNamespace: default
