@@ -14,3 +14,4 @@ spec:
           role: "vault-auth"
           serviceAccountRef:
             name: "vault-auth"
+            namespace: "default"
