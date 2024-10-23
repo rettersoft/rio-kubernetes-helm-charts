@@ -3,28 +3,30 @@
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 {{- range $consumerIndex, $consumer := $queue.consumers }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 8 $queue.name)) }}
+
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "main-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+  name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
   labels:
-    app: {{ include "main-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+    app: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "main-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+      app: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
   template:
     metadata:
       labels:
-        app: {{ include "main-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+        app: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
       containers:
-        - name: {{ include "main-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+        - name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           {{- if $.Values.command }}
           command: {{ $.Values.command | toYaml | nindent 12 }}
