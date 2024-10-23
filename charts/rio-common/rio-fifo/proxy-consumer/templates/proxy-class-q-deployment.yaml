@@ -2,22 +2,24 @@
 # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 7 $queue.name)) }}
+
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+  name: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
   labels:
-    app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+    app: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+      app: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
   template:
     metadata:
       labels:
-        app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+        app: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -42,7 +44,7 @@ spec:
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
       containers:
-        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           {{- if $.Values.command }}
           command: {{ $.Values.command | toYaml | nindent 12 }}
