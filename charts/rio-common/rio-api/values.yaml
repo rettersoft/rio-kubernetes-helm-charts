@@ -11,9 +11,10 @@ service:
   debugPort: 9229
 
 ingress:
+  host: localhost
+  certificateSecret: my-cert-tls
   enabled: true
   path: /
-
 
 resources:
   limits:

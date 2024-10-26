@@ -6,8 +6,8 @@ spec:
   # TODO should be dynamic
   tls:
     - hosts:
-        - console.localhost
-      secretName: my-cert-tls
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.certificateSecret }}
   ingressClassName: nginx
   rules:
     - host: console.localhost

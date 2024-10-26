@@ -8,11 +8,11 @@ spec:
   #TODO host should be dynamic
   tls:
     - hosts:
-        - localhost
-      secretName: my-cert-tls
+        - {{ .Values.ingress.host }}
+      secretName: {{ .Values.ingress.certificateSecret }}
   ingressClassName: nginx
   rules:
-    - host: localhost
+    - host: {{ .Values.host }}
       http:
         paths:
           - pathType: Prefix
