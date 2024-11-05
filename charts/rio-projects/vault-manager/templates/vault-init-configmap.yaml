@@ -7,17 +7,23 @@ data:
   init-vault.sh: |
     #!/bin/sh
     set -e
+    wget -O /usr/bin/jq https://github.com/stedolan/jq/releases/latest/download/jq-linux64 && \
+    chmod +x /usr/bin/jq
 
-    token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+
+
+    serviceAccountToken=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 
     # Remove trailing backslash
-    token=${token%\\}
+    serviceAccountToken=${serviceAccountToken%\\}
 
-    echo "$token"
-    vault write auth/kubernetes/login role=vault-auth jwt=$token
+    echo "$serviceAccountToken"
+    tokenResult=$(vault write auth/kubernetes/login role=vault-auth jwt=$serviceAccountToken -format=json)
+
+    token=$(echo "$tokenResult" | /usr/bin/jq -r .auth.client_token)
 
     echo "Enabling KV secrets engine..."
-    #vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
+    # vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
 
     echo "Updating secrets in Vault..."
     {{ range .Values.vault.initialSecrets }}
@@ -41,7 +47,7 @@ data:
     else
       echo "Secret at $SECRET_PATH is up to date. No changes made."
     fi
-  {{ end }}
+    {{ end }}
 
     echo "Vault initialization script completed."
     echo "Waiting for 30 seconds to ensure job completion is registered..."
