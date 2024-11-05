@@ -9,7 +9,10 @@ data:
     set -e
 
     token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
-    token=${token::-1}
+
+    #removes the last character using parameter expansion because it ends with \
+    token=${token%?}
+    echo token
     vault write auth/kubernetes/login role=vault-auth jwt=token
 
     echo "Enabling KV secrets engine..."
