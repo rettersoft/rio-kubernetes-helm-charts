@@ -10,8 +10,6 @@ data:
     wget -O /usr/bin/jq https://github.com/stedolan/jq/releases/latest/download/jq-linux64 && \
     chmod +x /usr/bin/jq
 
-
-
     serviceAccountToken=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
 
     # Remove trailing backslash
@@ -21,6 +19,7 @@ data:
     tokenResult=$(vault write auth/kubernetes/login role=vault-auth jwt=$serviceAccountToken -format=json)
 
     token=$(echo "$tokenResult" | /usr/bin/jq -r .auth.client_token)
+    vault login $token
 
     echo "Enabling KV secrets engine..."
     # vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
