@@ -8,12 +8,14 @@ data:
     #!/bin/sh
     set -e
 
+    token=$(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+    vault write auth/kubernetes/login role=vault-auth jwt=token
 
     echo "Enabling KV secrets engine..."
     vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
 
     echo "Updating secrets in Vault..."
-  {{ range .Values.vault.initialSecrets }}
+    {{ range .Values.vault.initialSecrets }}
     SECRET_PATH="{{ $.Values.vault.kvPath }}/{{ .path }}"
 
     echo "Checking if secret exists at $SECRET_PATH..."
