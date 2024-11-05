@@ -12,7 +12,7 @@ data:
 
     #removes the last character using parameter expansion because it ends with \
     token=${token%?}
-    echo token
+    echo $(token)
     vault write auth/kubernetes/login role=vault-auth jwt=token
 
     echo "Enabling KV secrets engine..."
