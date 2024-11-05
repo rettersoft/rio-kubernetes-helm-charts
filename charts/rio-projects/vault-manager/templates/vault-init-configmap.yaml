@@ -14,7 +14,7 @@ data:
     token=${token%\\}
 
     echo "$token"
-    vault write auth/kubernetes/login role=vault-auth jwt=token
+    vault write auth/kubernetes/login role=vault-auth jwt=$token
 
     echo "Enabling KV secrets engine..."
     vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
