@@ -8,7 +8,6 @@ data:
     #!/bin/sh
     set -e
 
-    vault login root
 
     echo "Enabling KV secrets engine..."
     vault secrets enable -version=2 -path={{ .Values.vault.kvPath }} kv 2>/dev/null || true
