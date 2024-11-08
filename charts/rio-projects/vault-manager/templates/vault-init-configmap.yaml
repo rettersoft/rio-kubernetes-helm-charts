@@ -40,7 +40,8 @@ data:
     NEW_DATA='{{ .data | toJson }}'
 
     if [ "$CURRENT_DATA" != "$NEW_DATA" ]; then
-      echo "Updating secret at $SECRET_PATH..."
+      echo "Updating secret at $SECRET_PATH... with $NEW_DATA"
+
       echo $NEW_DATA | vault kv put $SECRET_PATH -
       echo "Secret updated successfully in Vault"
     else
