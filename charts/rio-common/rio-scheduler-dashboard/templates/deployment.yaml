@@ -15,6 +15,10 @@ spec:
         app: {{ include "rio-scheduler-dashboard.fullname" . }}
     spec:
       dnsPolicy: ClusterFirst
+      {{- if .Values.global.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.global.image.pullSecret }}
+      {{- end }}
       containers:
         - name: {{ include "rio-scheduler-dashboard.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
