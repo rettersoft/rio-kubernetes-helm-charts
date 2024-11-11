@@ -74,7 +74,6 @@ rio-api:
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
-    -
 rio-rdk:
   envFrom:
     - secretRef:
