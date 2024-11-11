@@ -17,10 +17,6 @@ spec:
         {{- toYaml .Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
-      {{- if .Values.global.image.pullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.global.image.pullSecret }}
-      {{- end }}
       containers:
         - name: {{ include "projectid3.fullname" . }}
           {{- if .Values.command }}
