@@ -10,7 +10,7 @@ spec:
       secretName: {{ .Values.ingress.certificateSecret }}
   ingressClassName: nginx
   rules:
-    - host: console.localhost
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - pathType: Prefix
