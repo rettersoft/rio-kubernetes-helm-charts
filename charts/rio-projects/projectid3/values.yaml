@@ -206,7 +206,7 @@ rio-scheduler-dashboard:
     - secretRef:
         name: scheduler-redis-secrets
   image:
-    repository: swr.tr-west-1.myhuaweicloud.com/rio-a101-test/scheduler-dashboard:7
+    repository: swr.tr-west-1.myhuaweicloud.com/rio-a101-test/scheduler-dashboard
     tag: 7
     pullPolicy: Always
   queues:
