@@ -33,3 +33,8 @@ vault:
         MINIO_PORT: 443
         MINIO_ACCESS_KEY: 'projectid3'
         MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
+    - path: "JENKINS"
+      data:
+        JENKINS_HOST: 'jenkins.localhost'
+        JENKINS_REMOTE_TRIGGER_TOKEN: 'api-user'
+        JENKINS_REMOTE_USER: 'api-user'
