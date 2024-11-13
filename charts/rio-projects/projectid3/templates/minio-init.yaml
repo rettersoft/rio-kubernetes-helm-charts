@@ -11,7 +11,7 @@ spec:
           command: ["/bin/bash", "-c"]
           envFrom:
             - secretRef:
-                - name: minio-secrets
+                name: minio-secrets
           args:
             - |
               set -euo pipefail
