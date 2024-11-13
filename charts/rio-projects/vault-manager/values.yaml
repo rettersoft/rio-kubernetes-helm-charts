@@ -29,9 +29,9 @@ vault:
         MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
     - path: "MINIO"
       data:
-        MINIO_HOST: 'minio.minio-tenant.svc.cluster.local'
+        MINIO_HOST: 'minio.minio.svc.cluster.local'
         MINIO_PORT: 443
-        MINIO_ACCESS_KEY: 'projectid3'
+        MINIO_ACCESS_KEY: 'admin'
         MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
     - path: "JENKINS"
       data:
