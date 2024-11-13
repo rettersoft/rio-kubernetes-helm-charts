@@ -9,6 +9,9 @@ spec:
         - name: mc
           image: minio/mc:latest
           command: ["/bin/bash", "-c"]
+          envFrom:
+            - secretRef:
+                - name: minio-secrets
           args:
             - |
               set -euo pipefail
