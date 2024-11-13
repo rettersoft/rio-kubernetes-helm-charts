@@ -56,6 +56,8 @@ rio-api:
         name: scheduler-redis-secrets
     - secretRef:
         name: config-storage
+    - secretRef:
+        name: config-secret
   ingress:
     enabled: true
     canary: false
@@ -88,6 +90,8 @@ rio-rdk:
         name: scheduler-redis-secrets
     - secretRef:
         name: config-storage
+    - secretRef:
+        name: config-secret
   resources:
     limits:
       cpu: 100m
