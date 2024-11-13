@@ -14,10 +14,12 @@ spec:
               set -euo pipefail
 
               # Set MinIO alias
-              mc alias set myminio/ https://{{ .Values.global.env.MINIO_HOST }} {{ .Values.global.secret.MINIO_USERNAME }} {{ .Values.global.secret.MINIO_PASSWORD }}
+              mc alias set myminio/ https://minio.minio {{ .Values.global.secret.MINIO_USERNAME }} {{ .Values.global.secret.MINIO_PASSWORD }}
 
               # Add user to MinIO
-              mc admin user add myminio {{ .Values.global.env.MINIO_ACCESS_KEY }} {{ .Values.global.env.MINIO_SECRET_KEY }}
+              mc admin user add myminio $MINIO_ACCESS_KEY $MINIO_ACCESS_KEY
+
+              #mc admin user add myminio {{ .Values.global.env.MINIO_ACCESS_KEY }} {{ .Values.global.env.MINIO_ACCESS_KEY }}
 
               # Create the bucket if it doesn't exist
               mc ls myminio/{{ .Values.global.env.PROJECT_ID }} >/dev/null 2>&1 || mc mb myminio/{{ .Values.global.env.PROJECT_ID }}
