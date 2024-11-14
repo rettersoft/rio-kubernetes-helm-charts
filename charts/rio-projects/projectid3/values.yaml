@@ -57,7 +57,7 @@ rio-api:
     - secretRef:
         name: config-storage
     - secretRef:
-        name: config-secret
+        name: config-secret-root-api-key
   ingress:
     enabled: true
     canary: false
@@ -91,7 +91,7 @@ rio-rdk:
     - secretRef:
         name: config-storage
     - secretRef:
-        name: config-secret
+        name: config-secret-root-api-key
   resources:
     limits:
       cpu: 100m
