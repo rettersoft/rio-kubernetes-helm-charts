@@ -5,14 +5,13 @@ metadata:
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
 spec:
-  #TODO host should be dynamic
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
       secretName: letsencrypt-prod
   ingressClassName: nginx
   rules:
-    - host: {{ .Values.host }}
+    - host: {{ Values.ingress.host }}
       http:
         paths:
           - pathType: Prefix
