@@ -3,13 +3,13 @@ kind: Ingress
 metadata:
   name: {{ include "console.fullname" . }}
   annotations:
-    cert-manager.io/cluster-issuer: letsencrypt-prod
+    cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
 spec:
   # TODO should be dynamic
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: letsencrypt-prod
+      secretName: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
   ingressClassName: nginx
   rules:
     - host: k8-test-console.retter.io
