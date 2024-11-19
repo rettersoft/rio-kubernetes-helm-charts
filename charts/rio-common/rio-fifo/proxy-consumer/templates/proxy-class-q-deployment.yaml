@@ -1,5 +1,5 @@
 {{- $proxyGroup := .Values.global.proxyGroup -}}
-{{- printf "ProxyGroup type: %T" $proxyGroup | nindent 0 }}
+{{- printf "ProxyGroup type: %T" proxyGroup | nindent 0 }}
 {{- range $index := until (int $proxyGroup) }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior

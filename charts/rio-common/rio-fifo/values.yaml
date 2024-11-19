@@ -16,6 +16,8 @@ global:
       partitions: 1
       consumers:
         - 0-1
+  proxyGroup: 2
+  proxyGroupSize: 2
   env:
     PROJECT_ID: ${PROJECT_ID}
     MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
