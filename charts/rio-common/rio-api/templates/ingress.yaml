@@ -4,11 +4,12 @@ metadata:
   name: {{ include "rio-api.fullname" . }}
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
 spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: letsencrypt-prod
+      secretName: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
