@@ -3,7 +3,7 @@
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 {{- range $consumerIndex, $consumer := $queue.consumers }}
-{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 8 $queue.name)) }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queue.name)) }}
 
 
 ---
