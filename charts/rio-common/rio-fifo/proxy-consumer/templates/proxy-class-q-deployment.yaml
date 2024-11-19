@@ -1,4 +1,5 @@
-{{- range $index := until int .Values.global.proxyGroup }}
+{{- $proxyGroup := int .Values.global.proxyGroup -}}
+{{- range $index := until $proxyGroup }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
