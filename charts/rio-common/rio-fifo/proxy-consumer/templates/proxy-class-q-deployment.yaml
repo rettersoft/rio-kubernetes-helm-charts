@@ -35,7 +35,7 @@ spec:
             - name: PROXY_QUEUE_INDEX
               value: {{ $index | quote }}
             - name: PROXY_QUEUE_GROUP_SIZE
-              value: {{  $.Values.proxyGroup | quote }}
+              value: {{  $.Values.proxyGroupSize | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
