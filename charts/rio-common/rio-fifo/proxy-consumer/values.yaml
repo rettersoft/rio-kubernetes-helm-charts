@@ -1,4 +1,7 @@
 replicaCount: 1
+proxyGroup: 2
+proxyGroupSize: 2
+
 
 service:
   type: ClusterIP
