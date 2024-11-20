@@ -1,5 +1,7 @@
 replicaCount: 1
 
+extraEnv:
+  - test: value
 
 command:
   - node
