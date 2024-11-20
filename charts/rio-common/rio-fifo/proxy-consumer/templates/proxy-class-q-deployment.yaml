@@ -1,4 +1,4 @@
-{{ range $index := until .Values.proxyGroup }}
+{{ range $index := until (int .Values.proxyGroup) }}
 
 # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
@@ -35,7 +35,7 @@ spec:
             - name: PROXY_QUEUE_INDEX
               value: {{ $index }}
             - name: PROXY_QUEUE_GROUP_SIZE
-              value: {{  .Values.global.proxyGroup }}
+              value: {{  $.Values.proxyGroup }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -65,7 +65,7 @@ spec:
             - name: PROXY_QUEUE_INDEX
               value: {{ $index }}
             - name: PROXY_QUEUE_GROUP_SIZE
-              value: {{  .Values.global.proxyGroup }}
+              value: {{  $.Values.proxyGroup }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
