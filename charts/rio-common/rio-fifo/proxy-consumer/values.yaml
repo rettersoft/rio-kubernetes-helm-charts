@@ -17,6 +17,12 @@ resources:
     cpu: 100m
     memory: 128Mi
 
-command:
-  - node
-  - /opt/core-extension/dist/src/bin/fifo-proxy.js
+class:
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/fifo-proxy.js
+
+destination:
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/fifo-destination.js
