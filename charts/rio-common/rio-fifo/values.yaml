@@ -44,3 +44,8 @@ global:
 proxy-consumer:
   proxyGroup: 2
   proxyGroupSize: 2
+
+destination-consumer:
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/fifo-destination.js
