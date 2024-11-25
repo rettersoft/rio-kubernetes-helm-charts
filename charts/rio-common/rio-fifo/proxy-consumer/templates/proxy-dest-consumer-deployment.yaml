@@ -61,7 +61,7 @@ spec:
             - name: RIO_CLASS_QUEUE_NAME
               value: {{ $queue.name }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: 0-1
+              value: {{ $queue.consumers | quote }}
             # proxy-class main queue got this value from config map but we do not in destination
             - name: RIO_QUEUE_PARTITIONS
               value: "1"
