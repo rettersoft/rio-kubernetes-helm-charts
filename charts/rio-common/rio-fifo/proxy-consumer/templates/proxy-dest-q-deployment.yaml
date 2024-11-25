@@ -61,7 +61,7 @@ spec:
             - name: RIO_CLASS_QUEUE_NAME
               value: {{ $queue.name }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $queue.partitions | quote }}
+              value: {{ $queue.consumers | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
