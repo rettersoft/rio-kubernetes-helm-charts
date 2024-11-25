@@ -48,4 +48,4 @@ proxy-consumer:
 destination-consumer:
   command:
     - node
-    - /opt/core-extension/dist/src/bin/fifo-destination.js
+    - /opt/core-extension/dist/src/bin/fifo-destination-consumer.js
