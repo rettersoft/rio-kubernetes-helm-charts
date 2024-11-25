@@ -1,25 +1,23 @@
-{{ range $index := until (int .Values.proxyGroup) }}
-
+{{- range $index, $queue := .Values.global.destinations }}
 # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
-
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+  name: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
   labels:
-    app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+    app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+      app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
   template:
     metadata:
       labels:
-        app: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+        app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -30,12 +28,12 @@ spec:
       initContainers:
         - name: queue-init
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
-          command: ["node", "/opt/core-extension/dist/src/init/init-fifo-chunk.js"]
+          command: ["node", "/opt/core-extension/dist/src/init/init-fifo.js"]
           env:
-            - name: PROXY_QUEUE_INDEX
-              value: {{ $index | quote }}
-            - name: PROXY_QUEUE_GROUP_SIZE
-              value: {{  $.Values.proxyGroupSize | quote }}
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_PARTITIONS
+              value: {{ $queue.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -47,13 +45,11 @@ spec:
             {{- if $.Values.envFrom }}
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
-            - configMapRef:
-                name: proxy-queues-config-map
       containers:
-        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+        - name: {{ include "proxy-consumer.fullname" $ }}-d-{{ $index }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
-          {{- if $.Values.class.command }}
-          command: {{ $.Values.class.command | toYaml | nindent 12 }}
+          {{- if $.Values.destination.command }}
+          command: {{ $.Values.destination.command | toYaml | nindent 12 }}
           {{- end }}
           env:
             - name: SERVICE_NAME
@@ -62,10 +58,10 @@ spec:
               value: {{ $.Release.Name }}
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
-            - name: PROXY_QUEUE_INDEX
-              value: {{ $index | quote }}
-            - name: PROXY_QUEUE_GROUP_SIZE
-              value: {{  $.Values.proxyGroupSize | quote }}
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_CONSUMER_PARTITIONS
+              value: 0-1
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -77,8 +73,6 @@ spec:
             {{- if $.Values.envFrom }}
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
-            - configMapRef:
-                name: proxy-queues-config-map
           ports:
             - containerPort: {{ $.Values.service.targetPort }}
             - containerPort: {{ $.Values.service.debugPort }}

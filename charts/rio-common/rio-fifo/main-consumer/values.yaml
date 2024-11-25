@@ -17,4 +17,4 @@ resources:
 
 command:
   - node
-  - /opt/core-extension/dist/src/bin/fifo.js
+  - /opt/core-extension/dist/src/bin/fifo-class-consumer.js

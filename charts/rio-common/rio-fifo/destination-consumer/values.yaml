@@ -17,4 +17,4 @@ resources:
 
 command:
   - node
-  - /opt/core-extension/dist/src/bin/fifo-destination.js
+  - /opt/core-extension/dist/src/bin/fifo-dest-consumer.js

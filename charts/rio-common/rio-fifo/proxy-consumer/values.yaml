@@ -20,9 +20,9 @@ resources:
 class:
   command:
     - node
-    - /opt/core-extension/dist/src/bin/fifo-proxy.js
+    - /opt/core-extension/dist/src/bin/fifo-proxy-class-consumer.js
 
 destination:
   command:
     - node
-    - /opt/core-extension/dist/src/bin/fifo-destination.js
+    - /opt/core-extension/dist/src/bin/fifo-proxy-dest-consumer.js
