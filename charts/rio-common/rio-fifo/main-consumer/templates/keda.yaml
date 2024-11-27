@@ -1,0 +1,25 @@
+{{- range $index, $queue := .Values.global.queues }}
+  {{- range $consumerIndex, $consumer := $queue.consumers }}
+    {{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queue.name)) }}
+
+  ---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+  labels:
+    app: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+spec:
+  scaleTargetRef:
+    name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  triggers:
+    - type: rabbitmq
+      metadata:
+        queueName: {{ $queue.name | quote }}
+        queueLength: "1"
+      authenticationRef:
+        name: rio-fifo-keda-auth
+  {{- end }}
+{{- end }}
