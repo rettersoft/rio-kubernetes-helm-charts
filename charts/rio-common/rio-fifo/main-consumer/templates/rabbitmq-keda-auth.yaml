@@ -16,3 +16,5 @@ spec:
     - parameter: password
       name: rabbitmq-secrets
       key: RABBITMQ_PASSWORD
+    - parameter: protocol
+      value: amqp
