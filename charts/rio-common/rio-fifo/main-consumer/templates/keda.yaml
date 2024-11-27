@@ -19,7 +19,7 @@ spec:
       metadata:
         queueName: {{ $queue.name | quote }}
         queueLength: "1"
-        protocol: amqp://
+        protocol: amqp
         host: ''
         port: ''
         username: ''
