@@ -4,7 +4,7 @@ metadata:
   name: rio-fifo-keda-auth
 spec:
   secretTargetRef:
-    - parameter: hostname
+    - parameter: host
       name: rabbitmq-secrets
       key: RABBITMQ_HOST
     - parameter: port
