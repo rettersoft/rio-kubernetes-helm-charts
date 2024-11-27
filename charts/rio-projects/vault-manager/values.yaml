@@ -12,6 +12,7 @@ vault:
         RABBITMQ_PORT: "5672"
         RABBITMQ_USERNAME: 'new-user'
         RABBITMQ_PASSWORD: 'new-password'
+        RABBITMQ_CONNECTION_STRING: 'amqp://new-user:new-password@rabbitmq.default.svc.cluster.local'
     - path: "REDIS"
       data:
         REDIS_MODE: 'standalone'
