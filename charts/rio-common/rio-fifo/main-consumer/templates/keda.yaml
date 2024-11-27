@@ -20,10 +20,6 @@ spec:
         queueName: {{ $queue.name | quote }}
         queueLength: "1"
         protocol: amqp
-        host: ''
-        port: ''
-        username: ''
-        password: ''
       authenticationRef:
         name: rio-fifo-keda-auth
 {{- end }}
