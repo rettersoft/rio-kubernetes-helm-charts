@@ -14,6 +14,7 @@ spec:
     name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
   minReplicaCount: 0
   maxReplicaCount: 1
+  pollingInterval: 7
   triggers:
     - type: rabbitmq
       metadata:
