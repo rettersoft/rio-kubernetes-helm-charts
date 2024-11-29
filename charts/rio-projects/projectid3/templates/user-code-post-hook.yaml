@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: "{{ .Release.Name }}-post-upgrade-install"
   annotations:
-    "helm.sh/hook": post-install post-upgrade
+    "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
