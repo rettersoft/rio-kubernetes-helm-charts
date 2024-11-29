@@ -20,7 +20,7 @@ spec:
           image: "{{ .Values.global.userImage.repository }}:{{ .Values.global.userImage.tag }}"
           command:
             - node
-            - /opt/user-code/dist/src/hooks/post-hook.js
+            - /opt/core-extension/dist/src/hooks/post-hook.js
           envFrom:
             - secretRef:
                 name: redis-secrets
