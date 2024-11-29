@@ -18,6 +18,9 @@ spec:
           command:
             - node
             - /opt/core-extension/dist/src/hooks/post-hook.js
+          env:
+            - name: PROJECT_ID
+              value: {{ .Values.global.env.PROJECT_ID }}
           envFrom:
             - secretRef:
                 name: redis-secrets
