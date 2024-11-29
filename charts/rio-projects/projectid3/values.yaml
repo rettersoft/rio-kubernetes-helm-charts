@@ -42,6 +42,10 @@ global:
     repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
+  userImage:
+    repository: ${REPOSITORY}
+    tag: ${IMAGE_TAG}
+    pullPolicy: IfNotPresent
 
 
 rio-api:
