@@ -15,6 +15,7 @@ spec:
       containers:
         - name: "{{ .Release.Name }}-post-upgrade-install"
           image: "{{ .Values.global.userImage.repository }}:{{ .Values.global.userImage.tag }}"
+          imagePullPolicy: Always
           command:
             - node
             - /opt/core-extension/dist/src/hooks/post-hook.js
