@@ -25,3 +25,5 @@ spec:
             - secretRef:
                 name: redis-secrets
       restartPolicy: Never
+  backoffLimit: 4
+
