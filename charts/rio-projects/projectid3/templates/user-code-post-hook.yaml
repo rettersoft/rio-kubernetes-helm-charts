@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: "{{ .Release.Name }}-post-upgrade-install"
+  name: "{{ .Release.Name }}-post-upgrade-install-{{ now | date "20060102150405" }}"
   annotations:
     "helm.sh/hook": "post-install,post-upgrade"
     "helm.sh/hook-delete-policy": hook-succeeded
