@@ -25,6 +25,8 @@ spec:
           envFrom:
             - secretRef:
                 name: redis-secrets
+            - secretRef:
+                name: mongo-secrets
       restartPolicy: Never
   backoffLimit: 2
 
