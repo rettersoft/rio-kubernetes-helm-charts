@@ -4,10 +4,6 @@ metadata:
   name: {{ include "rio-api.fullname" . }}
   labels:
     app: {{ include "rio-api.fullname" . }}
-  annotations:
-    prometheus.io/scrape: 'true'
-    prometheus.io/port: '80'
-    prometheus.io/path: '/metrics'
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
