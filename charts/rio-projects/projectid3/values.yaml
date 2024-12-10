@@ -13,15 +13,15 @@ service:
   targetPort: 80
   debugPort: 9229
 
-extraEnvFromSecret:
+#extraEnvFromSecret:
 
-  resources:
-    limits:
-      cpu: 1
-      memory: 512Mi
-    requests:
-      cpu: 1
-      memory: 512Mi
+resources:
+  limits:
+    cpu: 1
+    memory: 512Mi
+  requests:
+    cpu: 1
+    memory: 512Mi
 
 nodeSelector: {}
 
@@ -205,9 +205,6 @@ rio-scheduler-task-consumer:
   command:
     - node
     - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
-
-
-
 
 rio-scheduler-dashboard:
   envFrom:
