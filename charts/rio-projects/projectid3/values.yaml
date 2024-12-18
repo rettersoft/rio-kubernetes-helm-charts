@@ -53,7 +53,6 @@ global:
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
 
-
 rio-api:
   envFrom:
     - secretRef:
@@ -88,6 +87,7 @@ rio-api:
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
+
 rio-rdk:
   envFrom:
     - secretRef:
@@ -226,7 +226,6 @@ rio-scheduler-dashboard:
     - ${PROJECT_ID}_async
     - ${PROJECT_ID}_task
     - ${PROJECT_ID}_cron
-
 
 vault:
   kvPath: "secret"
