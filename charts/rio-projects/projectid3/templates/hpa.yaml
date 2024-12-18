@@ -1,0 +1,16 @@
+{{- if .Values.autoscaling.enabled }}
+apiVersion: autoscaling/v1
+kind: HorizontalPodAutoscaler
+metadata:
+  name: {{ include "projectid3.fullname" . }}
+  labels:
+    app: {{ include "projectid3.fullname" . }}
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: {{ include "projectid3.fullname" . }}
+  minReplicas: {{ default 1 .Values.autoscaling.minReplicas }}
+  maxReplicas: {{ default 10 .Values.autoscaling.maxReplicas }}
+  targetCPUUtilizationPercentage: {{ default 70 .Values.autoscaling.targetCPUUtilizationPercentage }}
+{{- end }}
