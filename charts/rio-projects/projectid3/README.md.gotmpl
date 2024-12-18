@@ -1,0 +1,68 @@
+{{ template "chart.header" . }}
+{{ template "chart.deprecationWarning" . }}
+
+{{ template "chart.badgesSection" . }}
+
+{{ template "chart.description" . }}
+
+{{ template "chart.homepageLine" . }}
+
+{{ template "chart.maintainersSection" . }}
+
+{{ template "chart.sourcesSection" . }}
+
+{{ template "chart.requirementsSection" . }}
+
+## Values
+
+### Global Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+{{- if .IsGlobal }}
+| {{ .Key }} | {{ .Type }} | {{ .Default }} | {{ if .AutoDescription }}{{ .AutoDescription }}{{ else }}{{ .Description }}{{ end }} |
+{{- end }}
+{{- end }}
+
+### Parent Chart Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range .Values }}
+{{- if and (not .IsGlobal) (not .Dependency) }}
+| {{ .Key }} | {{ .Type }} | {{ .Default }} | {{ if .AutoDescription }}{{ .AutoDescription }}{{ else }}{{ .Description }}{{ end }} |
+{{- end }}
+{{- end }}
+
+{{- /* Get unique dependencies */ -}}
+{{- $deps := list -}}
+{{- range .Values -}}
+    {{- if .Dependency -}}
+        {{- $deps = append $deps .Dependency -}}
+    {{- end -}}
+{{- end -}}
+{{- $deps = uniq $deps -}}
+
+{{- /* Loop through each dependency */ -}}
+{{- range $dep := $deps }}
+### Sub-chart: {{ $dep }} Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+{{- range $.Values }}
+{{- if and (not .IsGlobal) (eq .Dependency $dep) }}
+| {{ .Key }} | {{ .Type }} | {{ .Default }} | {{ if .AutoDescription }}{{ .AutoDescription }}{{ else }}{{ .Description }}{{ end }} |
+{{- end }}
+{{- end }}
+
+{{- end }}
+
+
+
+
+
+{{ printf "%#v" . }}
+
+
+{{ template "helm-docs.versionFooter" . }}

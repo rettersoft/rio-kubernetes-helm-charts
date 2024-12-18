@@ -9,10 +9,11 @@ A simple Node.js TypeScript HTTP server
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
-| autoscaling.enabled | bool | `true` |  |
-| autoscaling.maxReplicas | int | `5` |  |
-| autoscaling.minReplicas | int | `1` |  |
-| autoscaling.targetCPUUtilizationPercentage | int | `60` |  |
+| autoscaling | object | `{"enabled":true,"maxReplicas":5,"minReplicas":1,"targetCPUUtilizationPercentage":60}` | Creates HPA |
+| autoscaling.enabled | bool | `true` | Creates HPA |
+| autoscaling.maxReplicas | int | `5` | Max Replicas |
+| autoscaling.minReplicas | int | `1` | Min Replicas |
+| autoscaling.targetCPUUtilizationPercentage | int | `60` | Target Cpu Utilization Percentage |
 | command[0] | string | `"node"` |  |
 | command[1] | string | `"/opt/core-extension/dist/src/bin/api.js"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
