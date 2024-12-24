@@ -52,6 +52,8 @@ global:
     repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
+  objectStorage:
+    type: MINIO
 
 rio-api:
   envFrom:
@@ -60,7 +62,7 @@ rio-api:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:
@@ -95,7 +97,7 @@ rio-rdk:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:
@@ -127,7 +129,7 @@ rio-scheduler-api:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:
@@ -150,7 +152,7 @@ rio-scheduler-async-consumer:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:
@@ -173,7 +175,7 @@ rio-scheduler-cron-consumer:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:
@@ -196,7 +198,7 @@ rio-scheduler-task-consumer:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:

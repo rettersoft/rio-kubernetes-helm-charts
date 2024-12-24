@@ -28,7 +28,7 @@ global:
     - secretRef:
         name: mongo-secrets
     - secretRef:
-        name: minio-secrets
+        name: object-storage-secrets
     - secretRef:
         name: redis-secrets
     - secretRef:

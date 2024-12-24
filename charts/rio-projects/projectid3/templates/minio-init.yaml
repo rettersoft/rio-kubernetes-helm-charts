@@ -1,3 +1,4 @@
+{{- if eq .Values.global.objectStorage.type "MINIO" }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -14,7 +15,7 @@ spec:
               value: {{ .Values.global.env.PROJECT_ID }}
           envFrom:
             - secretRef:
-                name: minio-secrets
+                name: object-storage-secrets
           args:
             - |
               set -euo pipefail
@@ -40,3 +41,4 @@ spec:
               echo "this user has access to every bucket ! be careful with that it was development purposes only and for the sake of simplicity"
       restartPolicy: Never
   backoffLimit: 4
+{{- end }}
