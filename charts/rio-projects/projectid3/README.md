@@ -22,20 +22,14 @@ A Helm chart for the runtime component
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.env.PROJECT_ID | string | `"${PROJECT_ID}"` |  |
-| global.env.RDK_URL | string | `"http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local"` |  |
-| global.env.SCHEDULER_API_URL | string | `"http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local"` |  |
-| global.env.USER_CODE_URL | string | `"http://${PROJECT_ID}-user-code.default.svc.cluster.local"` |  |
-| global.image.pullPolicy | string | `"IfNotPresent"` |  |
-| global.image.repository | string | `"${REPOSITORY}"` |  |
-| global.image.tag | string | `"${IMAGE_TAG}"` |  |
-| global.objectStorage.type | string | `"MINIO"` |  |
+| global.env | object | `{"PROJECT_ID":"${PROJECT_ID}","RDK_URL":"http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local","SCHEDULER_API_URL":"http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local","USER_CODE_URL":"http://${PROJECT_ID}-user-code.default.svc.cluster.local"}` | Environment variables that shared with all the pods |
+| global.image | object | `{"pullPolicy":"IfNotPresent","repository":"${REPOSITORY}","tag":"${IMAGE_TAG}"}` | Image of the RIO CORE |
+| global.objectStorage | object | `{"type":"MINIO"}` | Bucket storage |
+| global.objectStorage.type | string | `"MINIO"` | type of the object storage other options S3 |
 | global.podAnnotations | string | `nil` |  |
 | global.secret.MINIO_PASSWORD | string | `"minio123"` |  |
 | global.secret.MINIO_USERNAME | string | `"minio"` |  |
-| global.userImage.pullPolicy | string | `"IfNotPresent"` |  |
-| global.userImage.repository | string | `"${REPOSITORY}"` |  |
-| global.userImage.tag | string | `"${IMAGE_TAG}"` |  |
+| global.userImage | object | `{"pullPolicy":"IfNotPresent","repository":"${REPOSITORY}","tag":"${IMAGE_TAG}"}` | The image of user code refer to: https://github.com/rettersoft/rio-kubernetes-user-code |
 
 ### Parent Chart Values
 

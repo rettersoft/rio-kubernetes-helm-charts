@@ -36,6 +36,7 @@ tolerations: []
 affinity: {}
 global:
   podAnnotations:
+  # -- Environment variables that shared with all the pods
   env:
     PROJECT_ID: ${PROJECT_ID}
     USER_CODE_URL: 'http://${PROJECT_ID}-user-code.default.svc.cluster.local'
@@ -44,15 +45,19 @@ global:
   secret:
     MINIO_USERNAME: "minio"
     MINIO_PASSWORD: "minio123"
+  # --  Image of the RIO CORE
   image:
     repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
+  # -- The image of user code refer to: https://github.com/rettersoft/rio-kubernetes-user-code
   userImage:
     repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
     pullPolicy: IfNotPresent
+  # -- Bucket storage
   objectStorage:
+    # -- type of the object storage other options S3
     type: MINIO
 
 rio-api:
