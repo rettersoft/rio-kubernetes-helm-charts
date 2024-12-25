@@ -27,7 +27,7 @@ A Helm chart for the rio-fifo component
 | global.env.USER_CODE_URL | string | `"http://${PROJECT_ID}-user-code.default.svc.cluster.local"` |  |
 | global.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | global.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| global.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| global.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | global.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | global.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | global.envFrom[5].secretRef.name | string | `"config-storage"` |  |

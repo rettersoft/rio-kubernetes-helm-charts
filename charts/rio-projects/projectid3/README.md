@@ -29,6 +29,7 @@ A Helm chart for the runtime component
 | global.image.pullPolicy | string | `"IfNotPresent"` |  |
 | global.image.repository | string | `"${REPOSITORY}"` |  |
 | global.image.tag | string | `"${IMAGE_TAG}"` |  |
+| global.objectStorage.type | string | `"MINIO"` |  |
 | global.podAnnotations | string | `nil` |  |
 | global.secret.MINIO_PASSWORD | string | `"minio123"` |  |
 | global.secret.MINIO_USERNAME | string | `"minio"` |  |
@@ -62,7 +63,7 @@ A Helm chart for the runtime component
 | rio-api.command[1] | string | `"/opt/core-extension/dist/src/bin/api.js"` |  |
 | rio-api.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-api.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-api.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-api.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-api.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-api.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-api.envFrom[5].secretRef.name | string | `"config-storage"` |  |
@@ -81,7 +82,7 @@ A Helm chart for the runtime component
 | rio-rdk.command[1] | string | `"/opt/core-extension/dist/src/bin/rdk.js"` |  |
 | rio-rdk.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-rdk.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-rdk.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-rdk.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-rdk.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-rdk.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-rdk.envFrom[5].secretRef.name | string | `"config-storage"` |  |
@@ -98,7 +99,7 @@ A Helm chart for the runtime component
 | rio-scheduler-api.command[1] | string | `"/opt/core-extension/dist/src/bin/scheduler-api.js"` |  |
 | rio-scheduler-api.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-scheduler-api.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-scheduler-api.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-scheduler-api.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-scheduler-api.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-scheduler-api.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-scheduler-api.envFrom[5].secretRef.name | string | `"config-storage"` |  |
@@ -110,7 +111,7 @@ A Helm chart for the runtime component
 | rio-scheduler-async-consumer.command[1] | string | `"/opt/core-extension/dist/src/bin/scheduler-async-consumer.js"` |  |
 | rio-scheduler-async-consumer.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-scheduler-async-consumer.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-scheduler-async-consumer.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-scheduler-async-consumer.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-scheduler-async-consumer.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-scheduler-async-consumer.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-scheduler-async-consumer.envFrom[5].secretRef.name | string | `"config-storage"` |  |
@@ -122,7 +123,7 @@ A Helm chart for the runtime component
 | rio-scheduler-cron-consumer.command[1] | string | `"/opt/core-extension/dist/src/bin/scheduler-cron-consumer.js"` |  |
 | rio-scheduler-cron-consumer.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-scheduler-cron-consumer.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-scheduler-cron-consumer.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-scheduler-cron-consumer.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-scheduler-cron-consumer.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-scheduler-cron-consumer.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-scheduler-cron-consumer.envFrom[5].secretRef.name | string | `"config-storage"` |  |
@@ -142,7 +143,7 @@ A Helm chart for the runtime component
 | rio-scheduler-task-consumer.command[1] | string | `"/opt/core-extension/dist/src/bin/scheduler-task-consumer.js"` |  |
 | rio-scheduler-task-consumer.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
-| rio-scheduler-task-consumer.envFrom[2].secretRef.name | string | `"minio-secrets"` |  |
+| rio-scheduler-task-consumer.envFrom[2].secretRef.name | string | `"object-storage-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[5].secretRef.name | string | `"config-storage"` |  |
