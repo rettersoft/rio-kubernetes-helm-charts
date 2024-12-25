@@ -1,15 +1,24 @@
+{{- if .Values.ingress.enabled }}
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: {{ include "rio-api.fullname" . }}
   annotations:
     nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # Only add cert-manager.io/cluster-issuer annotation for Let's Encrypt
+    {{- if eq .Values.global.certificate.type "letsencrypt" }}
     cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+    {{- end }}
 spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+      # Use the appropriate secretName based on the certificate type
+      secretName: {{- if eq .Values.global.certificate.type "letsencrypt" -}}
+        letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+      {{- else -}}
+        my-cert-tls
+      {{- end }}
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
@@ -22,3 +31,4 @@ spec:
                 name: {{ include "rio-api.fullname" . }}
                 port:
                   number: 80
+{{- end }}

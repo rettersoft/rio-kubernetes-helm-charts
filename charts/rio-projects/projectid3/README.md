@@ -22,6 +22,7 @@ A Helm chart for the runtime component
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
+| global.certificate.type | string | `"custom"` | What type of TLS certificate should be used?    Available options:    1) custom: A user-provided certificate.       - You must create your own secret, for example:         kubectl create secret tls my-cert-tls \           --cert /path/to/tls.crt \           --key /path/to/tls.key       - Reference that secret in your Helm chart as needed.    2) letsencrypt: Automatically request a certificate from Let's Encrypt.     Default is "custom". |
 | global.env | object | `{"PROJECT_ID":"${PROJECT_ID}","RDK_URL":"http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local","SCHEDULER_API_URL":"http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local","USER_CODE_URL":"http://${PROJECT_ID}-user-code.default.svc.cluster.local"}` | Environment variables that shared with all the pods |
 | global.image | object | `{"pullPolicy":"IfNotPresent","repository":"${REPOSITORY}","tag":"${IMAGE_TAG}"}` | Image of the RIO CORE |
 | global.objectStorage | object | `{"type":"MINIO"}` | Bucket storage |
