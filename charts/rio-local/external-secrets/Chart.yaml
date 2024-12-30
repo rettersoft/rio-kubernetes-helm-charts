@@ -1,0 +1,13 @@
+apiVersion: v2
+name: external-secrets
+description: A Helm chart for managing loki
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+# https://secrets-store-csi-driver.sigs.k8s.io/topics/set-as-env-var
+
+dependencies:
+  - name: external-secrets
+    version: 0.10.2
+    repository: https://charts.external-secrets.io

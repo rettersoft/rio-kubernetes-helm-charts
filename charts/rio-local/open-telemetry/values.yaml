@@ -1,0 +1,18 @@
+opentelemetry-collector:
+  mode: "statefulset"
+  image:
+    repository: otel/opentelemetry-collector-k8s
+  command:
+    name: otelcol-k8s
+  config:
+    exporters:
+      otlp:
+        endpoint: jaeger-collector.monitoring.svc.cluster.local:4317
+        tls:
+          insecure: true
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp, jaeger]
+          processors: [batch]
+          exporters: [otlp]

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: jaeger
+description: A Helm chart for managing jaeger
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+dependencies:
+  - name: jaeger
+    version: 3.3.3
+    repository: https://jaegertracing.github.io/helm-charts

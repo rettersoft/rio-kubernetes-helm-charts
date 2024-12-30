@@ -1,0 +1,15 @@
+jaeger:
+  collector:
+    cmdlineParams:
+      collector.otlp.enabled: "true"
+      collector.otlp.grpc.host-port: ":4317"
+    service:
+      otlp:
+        grpc:
+          name: otlp-grpc
+          port: 4317
+        http:
+          name: otlp-http
+          port: 4318
+  provisionDataStore:
+    cassandra: true

@@ -1,0 +1,94 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-init-script
+data:
+  init-script.sh: |
+    #!/bin/sh
+
+    set -euo pipefail  # Exit on error, unset variables, and pipeline failures
+    token=$(cat /vault/data/seal.json | /vault/bin/jq -r .root_token)
+    vault login "$token"
+
+    echo 'enabling vault auth'
+    vault auth enable kubernetes || true
+    vault secrets enable -version=2 -path=secret kv || true
+
+    echo 'creating policy'
+    vault policy write allow_secrets_readonly - <<EOF
+    # For reading secret data
+    path "secret/data/*" {
+      capabilities = ["read", "list", "create", "update"]
+    }
+    path "secret/*" {
+      capabilities = ["read", "list", "create", "update"]
+    }
+
+    # For listing and managing secret metadata (e.g., for deletion)
+    path "secret/metadata/*" {
+      capabilities = ["read", "list", "create", "update"]
+    }
+
+    # Allow listing of secret engines
+    path "secret/*" {
+      capabilities = ["read", "list", "create", "update"]
+    }
+
+    # Allow token to look up its own properties
+    path "auth/token/lookup-self" {
+      capabilities = ["read"]
+    }
+
+    # Allow read access to system paths necessary for KV operations
+    path "sys/internal/ui/mounts" {
+      capabilities = ["read", "list"]
+    }
+    path "sys/internal/ui/mounts/*" {
+      capabilities = ["read", "list"]
+    }
+
+    # Allow read access to sys/mounts paths
+    path "sys/mounts" {
+      capabilities = ["read", "list"]
+    }
+    path "sys/mounts/*" {
+      capabilities = ["read", "list"]
+    }
+    EOF
+
+    echo 'creating entity'
+    ENTITY_OUTPUT=$(vault write -format=json identity/entity \
+      name="vault-auth" \
+      policies="allow_secrets_readonly" \
+      metadata=asset_id="2b17cacc-9e2d-4499-b95a-445fd26a7814")
+
+    echo 'getting entity id'
+    ENTITY_ID=$(echo $ENTITY_OUTPUT | /vault/bin/jq -r '.data.id')
+    echo "ENTITY_ID: ${ENTITY_ID}"
+
+    echo 'getting vault auth list'
+    AUTH_LIST_OUTPUT=$(vault auth list -format=json)
+    echo "AUTH_LIST_OUTPUT: ${AUTH_LIST_OUTPUT}"
+
+
+    echo 'getting K8S_ACCESSOR'
+    K8S_ACCESSOR=$(echo $AUTH_LIST_OUTPUT | /vault/bin/jq -r '."kubernetes/".accessor')
+    echo "K8S_ACCESSOR: ${K8S_ACCESSOR}"
+
+    echo 'creating identity'
+    vault write identity/entity-alias name="default/vault-auth" canonical_id=$ENTITY_ID mount_accessor=$K8S_ACCESSOR
+
+    echo 'creating role'
+
+    vault write auth/kubernetes/role/vault-auth \
+    bound_service_account_names="vault-auth" \
+    bound_service_account_namespaces="*" \
+    alias_name_source="serviceaccount_name" \
+    policies="allow_secrets_readonly" \
+    ttl="84h"
+
+    echo 'configuring auth/kubernetes backend'
+    vault write auth/kubernetes/config \
+      kubernetes_host="https://kubernetes.default.svc.cluster.local:443" \
+      kubernetes_ca_cert=@/var/run/secrets/kubernetes.io/serviceaccount/ca.crt \
+      token_reviewer_jwt=@/var/run/secrets/kubernetes.io/serviceaccount/token

@@ -1,0 +1,23 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: "minio-console-ingress"
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  tls:
+    - hosts:
+        - minio.213.250.133.230.nip.io
+      secretName: my-cert-tls
+  ingressClassName: nginx
+  rules:
+    - host: minio.213.250.133.230.nip.io
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: main-console
+                port:
+                  number: 9443

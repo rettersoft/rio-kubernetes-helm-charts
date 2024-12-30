@@ -1,0 +1,20 @@
+apiVersion: v2
+name: vault
+description: A Helm chart for managing loki
+type: application
+version: 0.1.0
+appVersion: "1.0"
+
+# https://developer.hashicorp.com/vault/docs/platform/k8s/vso/api-reference
+
+# helm install my-vault-release . \
+#  --set vault.server.ingress.enabled=true \
+#  --set vault.server.ingress.hosts[0].host=vault.example.com
+
+dependencies:
+  - name: vault
+    version: 0.28.1
+    repository: https://helm.releases.hashicorp.com
+  - name: vault-secrets-operator
+    version: 0.3.4
+    repository: https://helm.releases.hashicorp.com

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: coredns-custom
+  namespace: kube-system
+data:
+  harbor.server: |
+    harbor.192.168.49.2.nip.io:53 {
+        errors
+        cache 30
+        forward . 10.96.0.100
+    }

@@ -1,0 +1,11 @@
+apiVersion: v2
+name: jenkins
+description: A Helm chart for Kubernetes that includes jenkins
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: jenkins
+    version: 13.4.19
+    repository: https://charts.bitnami.com/bitnami

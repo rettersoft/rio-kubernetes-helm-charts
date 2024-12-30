@@ -1,0 +1,42 @@
+harbor:
+
+  expose:
+    type: ingress
+    tls:
+      enabled: true
+      certSource: auto
+    ingress:
+      className: "nginx"
+      hosts:
+        core: harbor.192.168.49.2.nip.io
+      annotations:
+        kubernetes.io/ingress.class: nginx
+        cert-manager.io/cluster-issuer: "letsencrypt-prod"
+        kubernetes.io/tls-acme: "true"
+        ingress.kubernetes.io/ssl-redirect: "true"
+        ingress.kubernetes.io/proxy-body-size: "0"
+        nginx.ingress.kubernetes.io/ssl-redirect: "true"
+        nginx.ingress.kubernetes.io/proxy-body-size: "0"
+
+
+  externalURL: https://harbor.192.168.49.2.nip.io
+  # The internal TLS used for harbor components secure communicating. In order to enable https
+  # in each component tls cert files need to provided in advance.
+
+  persistence:
+    enabled: true
+    storageClass: "standard"
+
+  harborAdminPassword: "Harbor12345"
+
+  database:
+    type: internal
+
+  redis:
+    type: internal
+
+  notary:
+    enabled: false
+
+  trivy:
+    enabled: false

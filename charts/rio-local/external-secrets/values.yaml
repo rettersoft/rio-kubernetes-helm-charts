@@ -1,0 +1,4 @@
+external-secrets:
+  serviceAccount:
+    name: vault-auth
+    create: false

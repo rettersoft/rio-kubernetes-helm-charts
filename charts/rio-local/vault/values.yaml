@@ -1,0 +1,94 @@
+
+vault:
+  server:
+    dev:
+      enabled: false
+    standalone:
+      enabled: true
+    ha:
+      enabled: false
+    dataStorage:
+      enabled: true
+      storageClass: "csi-disk"
+
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      tls:
+        - secretName: vault-tls
+          hosts:
+            - vault.213.250.133.230.nip.io
+      hosts:
+        - host: "vault.213.250.133.230.nip.io"
+          paths:
+            - /
+
+    volumes:
+      - name: vault-bin
+        emptyDir: {}
+      - name: vault-init-script
+        configMap:
+          name: vault-init-script
+      - name: vault-unseal-script
+        configMap:
+          name: vault-unseal-script
+
+    volumeMounts:
+      - name: vault-bin
+        mountPath: /vault/bin
+      - name: vault-init-script
+        mountPath: /vault/init-script.sh
+        subPath: init-script.sh
+      - name: vault-unseal-script
+        mountPath: /vault/unseal-script.sh
+        subPath: unseal-script.sh
+
+
+    extraInitContainers:
+      - name: install-jq
+        image: alpine:latest
+        command: [ "/bin/sh", "-c" ]
+        args:
+          - |
+            wget -O /vault/bin/jq https://github.com/stedolan/jq/releases/latest/download/jq-linux64 && \
+            chmod +x /vault/bin/jq
+        volumeMounts:
+          - name: vault-bin
+            mountPath: /vault/bin
+#    postStart:
+#      - /bin/sh
+#      - -c
+#      - sh /vault/init-script.sh
+    postStart:
+      - /bin/sh
+      - -c
+      - |
+        MAX_RETRIES=15 
+        RETRY_COUNT=0
+        echo "trying..." >> /vault/init-script-bootstrap.log 2>&1
+
+        sh /vault/unseal-script.sh >> /vault/unseal-script.log 2>&1  
+        echo "unseal vault complete..." >> /vault/init-script-bootstrap.log 2>&1
+
+        while [ $RETRY_COUNT -lt $MAX_RETRIES ]; do
+          echo "loop started..." >> /vault/init-script-bootstrap.log 2>&1
+          token=$(cat /vault/data/seal.json | /vault/bin/jq -r .root_token)
+          vault login "$token" >> /vault/init-script-bootstrap.log 2>&1
+        
+          if vault auth list; then
+            sh /vault/init-script.sh >> /vault/init-script-bootstrap.log 2>&1
+            break
+          fi
+
+          RETRY_COUNT=$((RETRY_COUNT + 1))
+          sleep 1
+        done  
+
+
+  ui:
+    enabled: true
+    serviceType: ClusterIP
+  injector:
+    enabled: false
+  csi:
+    enabled: false

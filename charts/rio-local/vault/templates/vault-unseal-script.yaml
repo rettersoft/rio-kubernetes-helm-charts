@@ -1,0 +1,38 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: vault-unseal-script
+data:
+  unseal-script.sh: |
+    #!/bin/sh
+    echo 'script running'
+
+    # Check if Vault is initialized
+    if vault status 2>&1 | grep 'Initialized.*false'; then
+      # Initialize Vault
+      echo "condition true"
+      if [ -f /vault/data/seal.json ]; then
+        echo "Error: /vault/seal.json already exists. Initialization aborted to prevent data loss."
+        exit 1
+      else
+        echo "operator init -key-shares=1 -key-threshold bla bla"
+        vault operator init -key-shares=1 -key-threshold=1 -format=json > /vault/data/seal.json
+      fi
+    else
+     echo 'condition false'
+    fi
+
+    echo $(vault status)
+
+    if vault status 2>&1 | grep 'Sealed.*true'; then
+     # Extract unseal key and root token
+      echo 'Sealed.*true'
+      UNSEAL_KEY=$(/vault/bin/jq -r '.unseal_keys_b64[0]' /vault/data/seal.json)
+      echo  "$UNSEAL_KEY"
+      # Unseal Vault
+      vault operator unseal $UNSEAL_KEY
+    else
+     echo 'Sealed.*false'
+    fi
+
+    echo "root token stored at /vault/data/seal.json"

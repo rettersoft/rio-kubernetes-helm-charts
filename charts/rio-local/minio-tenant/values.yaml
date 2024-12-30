@@ -1,0 +1,25 @@
+tenant:
+  tenant:
+    name: "main"
+    configSecret:
+      name: myminio-env-configuration
+      accessKey: minio
+      secretKey: minio123
+
+    pools:
+      - servers: 2
+        name: main
+        volumesPerServer: 2
+        storageClassName: "csi-disk"  # Replace with your storage class name
+        volumeClaimTemplate:
+          metadata:
+            name: data
+          spec:
+            storageClassName: "csi-disk"  # Replace with your storage class name
+            accessModes:
+              - ReadWriteOnce
+            resources:
+              requests:
+                storage: 10Gi
+
+
