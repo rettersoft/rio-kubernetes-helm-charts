@@ -1,6 +1,0 @@
-dependencies:
-- name: jenkins
-  repository: https://charts.bitnami.com/bitnami
-  version: 13.4.19
-digest: sha256:35175d5506077fd035bac6d4bc6784d22f136bd5055cb33152bd5d66fafb6b39
-generated: "2024-09-11T21:49:18.967023+03:00"
