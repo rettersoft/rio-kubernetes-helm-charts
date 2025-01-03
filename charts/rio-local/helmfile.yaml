@@ -53,10 +53,3 @@ releases:
     namespace: default
     chart: ./vault
 
-  - name: jenkins
-    namespace: default
-    chart: ./jenkins
-
-  - name: external-secrets
-    namespace: default
-    chart: ./external-secrets

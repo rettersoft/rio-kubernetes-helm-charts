@@ -9,7 +9,7 @@ vault:
       enabled: false
     dataStorage:
       enabled: true
-      storageClass: "csi-disk"
+      #storageClass: "csi-disk" # disk type
 
     ingress:
       enabled: true
@@ -17,9 +17,9 @@ vault:
       tls:
         - secretName: vault-tls
           hosts:
-            - vault.213.250.133.230.nip.io
+            - vault.localhost
       hosts:
-        - host: "vault.213.250.133.230.nip.io"
+        - host: vault.localhost
           paths:
             - /
 
@@ -50,7 +50,22 @@ vault:
         command: [ "/bin/sh", "-c" ]
         args:
           - |
-            wget -O /vault/bin/jq https://github.com/stedolan/jq/releases/latest/download/jq-linux64 && \
+            set -eux
+            ARCH=$(uname -m)
+            case "$ARCH" in x86_64)
+            JQ_URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64"
+            ;;
+            armv8*|aarch64*)
+            # Adjust if your ARM binary has a different filename in the release
+            JQ_URL="https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64"
+            ;;
+            *)
+            echo "Unsupported architecture: $ARCH"
+            exit 1
+            ;;
+            esac
+            
+            wget -O /vault/bin/jq "$JQ_URL"
             chmod +x /vault/bin/jq
         volumeMounts:
           - name: vault-bin
