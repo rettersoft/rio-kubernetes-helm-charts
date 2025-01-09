@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: jenkins
+    component: master
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      targetPort: http
+    - name: agent
+      port: {{ .Values.service.agentPort }}
+      targetPort: agent

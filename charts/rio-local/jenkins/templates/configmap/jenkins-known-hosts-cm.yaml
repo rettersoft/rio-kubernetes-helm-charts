@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-known-hosts
+data:
+  known_hosts: |-
+    {{- .Files.Get "ssh-key/known_hosts" | nindent 4 }}

@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-projects-config
+data:
+  projects-config.yaml: |
+    {{- .Files.Get "projects-config/projects-config.yaml" | nindent 4 }}

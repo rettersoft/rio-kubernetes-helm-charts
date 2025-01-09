@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jenkins
+  labels:
+    app: jenkins
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: jenkins
+      component: master
+  template:
+    metadata:
+      labels:
+        app: jenkins
+        component: master
+    spec:
+      serviceAccountName: jenkins-sa
+      initContainers:
+        - name: kubeconfig-init
+          image: busybox:latest
+          command: [ "/bin/sh","-c" ]
+          args:
+            - |
+              echo "Creating in-cluster kubeconfig in /work/config"
+              cat <<EOF > /work/config
+              apiVersion: v1
+              clusters:
+              - cluster:
+                  certificate-authority: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+                  server: https://${KUBERNETES_SERVICE_HOST}:${KUBERNETES_SERVICE_PORT}
+                name: in-cluster
+              contexts:
+              - context:
+                  cluster: in-cluster
+                  user: jenkins
+                name: in-cluster
+              current-context: in-cluster
+              kind: Config
+              preferences: {}
+              users:
+              - name: jenkins
+                user:
+                  token: $(cat /var/run/secrets/kubernetes.io/serviceaccount/token)
+              EOF
+          volumeMounts:
+            - name: kubeconfig-vol
+              mountPath: /work
+      containers:
+        - name: jenkins
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            {{- range .Values.masterEnv }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+            - name: agent
+              containerPort: {{ .Values.service.agentPort }}
+          volumeMounts:
+            - name: kubeconfig-vol
+              mountPath: /var/jenkins_home/.kube
+            - name: ssh-key
+              mountPath: /var/jenkins_home/.ssh
+            - name: casc-configs
+              mountPath: /opt/bitnami/jenkins/casc_configs
+            - name: projects-config
+              mountPath: /bitnami/jenkins/projects-config
+            - name: docker-sock
+              mountPath: /var/run/docker.sock
+            - name: docker-bin
+              mountPath: /usr/bin/docker
+            - name: jenkins-home
+              mountPath: /var/jenkins_home
+      volumes:
+        - name: kubeconfig-vol
+          emptyDir: {}
+
+        - name: ssh-key
+          configMap:
+            name: jenkins-known-hosts
+            items:
+              - key: known_hosts
+                path: known_hosts
+
+        - name: casc-configs
+          configMap:
+            name: jenkins-casc
+            items:
+              - key: jenkins.yaml
+                path: jenkins.yaml
+
+
+        - name: projects-config
+          configMap:
+            name: jenkins-projects-config
+            items:
+              - key: projects-config.yaml
+                path: projects-config.yaml
+
+        - name: docker-sock
+          hostPath:
+            path: {{ .Values.hostPaths.dockerSockPath }}
+            type: Socket
+
+        - name: docker-bin
+          hostPath:
+            path: {{ .Values.hostPaths.dockerBinPath }}
+            type: File
+
+        - name: jenkins-home
+          persistentVolumeClaim:
+            claimName: jenkins-home

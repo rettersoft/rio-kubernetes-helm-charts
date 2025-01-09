@@ -1,0 +1,125 @@
+jenkins:
+    systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin"
+    numExecutors: 5
+    mode: NORMAL
+    scmCheckoutRetryCount: 3
+    labelString: "master-node"
+    nodes:
+        - permanent:
+              name: "agent1"
+              numExecutors: 5
+              remoteFS: "/home/jenkins/agent"
+              launcher:
+                jnlp:
+                  workDirSettings:
+                    disabled: false
+                    internalDir: "remoting"
+                    failIfWorkDirIsMissing: false
+    securityRealm:
+        local:
+            allowsSignup: false
+            users:
+                - id: "${JENKINS_REMOTE_USER}"
+                  name: "${JENKINS_REMOTE_USER}"
+                  password: "${JENKINS_REMOTE_TRIGGER_TOKEN}"
+                  properties:
+                      - mailer:
+                            emailAddress: "jenkins@retter.io"
+    authorizationStrategy:
+        loggedInUsersCanDoAnything:
+            allowAnonymousRead: false
+
+credentials:
+  system:
+    domainCredentials:
+      - credentials:
+          - basicSSHUserPrivateKey:
+              scope: GLOBAL
+              id: "ssh-key"
+              description: "SSH key for Git access"
+              username: "msacar"
+              passphrase: ""
+              privateKeySource:
+                directEntry:
+                  privateKey: "patates"
+          - file:
+              id: "kube-config"
+              scope: GLOBAL
+              description: "kube config"
+              fileName: "config"
+              secretBytes: "{+Eb1J5s+OmcHcFwh01//EN8KgWdttODlJs3lBG+QtK8=}"
+          - string:
+              scope: GLOBAL
+              id: "docker-credentials"
+              description: "docker credentials"
+              secret: "{AQAAABAAAAAQlxnkJNIgAmTWPSqQGTXkjtAKzZDGDZ+6iBb9SZ1kuqk=}"
+
+
+
+jobs:
+  - script: >
+      pipelineJob('project-setup') {
+        description('Pipeline job for project setup')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('git@github.com:rettersoft/rio-kubernetes-project-setup.git')
+                  credentials('ssh-key')
+                }
+                branches('*/main')
+              }
+            }
+            scriptPath('setup.Jenkinsfile')
+          }
+        }
+        authenticationToken('')          
+      }
+
+  - script: >
+      pipelineJob('project-config') {
+        description('Pipeline job for project setup')
+        definition {
+          cpsScm {
+            scm {
+              git {
+                remote {
+                  url('git@github.com:rettersoft/rio-kubernetes-project-setup.git')
+                  credentials('ssh-key')
+                }
+                branches('*/main')
+              }
+            }
+            scriptPath('config.Jenkinsfile')
+          }
+        }
+        authenticationToken('')          
+      }
+
+tool:
+  nodejs:
+    installations:
+      - name: "node22.8.x"
+        properties:
+          - installSource:
+              installers:
+                - nodeJSInstaller:
+                    id: "22.8.0"
+                    npmPackages: pnpm ts-node@10.9.1 typescript@5.0.3
+
+unclassified:
+  globalLibraries:
+    libraries:
+      - name: "retter"
+        defaultVersion: "main"
+        allowVersionOverride: true
+        implicit: false
+        includeInChangesets: true
+        retriever:
+          modernSCM:
+            scm:
+              git:
+                remote: "git@github.com:rettersoft/rio-kubernetes-jenkins-global-pipeline.git"
+                credentialsId: "ssh-key"
+

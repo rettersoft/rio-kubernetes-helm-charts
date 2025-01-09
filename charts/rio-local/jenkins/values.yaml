@@ -1,0 +1,52 @@
+replicaCount: 1
+
+image:
+  repository: my-jenkins
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+agentImage:
+  repository: jenkins/inbound-agent
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 8080
+  agentPort: 50000
+
+# Example environment variables for Jenkins master
+masterEnv:
+  - name: JENKINS_REMOTE_USER
+    value: "api-user"
+  - name: JENKINS_REMOTE_TRIGGER_TOKEN
+    value: "api-user"
+  - name: CASC_JENKINS_CONFIG
+    value: "/opt/bitnami/jenkins/casc_configs/jenkins.yaml"
+
+# Example environment variables for Jenkins agent
+agentEnv:
+  - name: JENKINS_AGENT_OPTS
+    value: "-verbose"
+
+# Jenkins Agent command arguments
+agentCommandArgs:
+  - "-url"
+  - "http://jenkins:8080"
+  - "-workDir"
+  - "/home/jenkins/agent"
+  - "-secret"
+  - "YOUR_SECRET_HERE"
+  - "-name"
+  - "my-jenkins-agent"
+
+persistence:
+  enabled: true
+  size: 8Gi
+  storageClass: ""  # or specify a storage class if needed
+
+# Host paths to match your Docker Compose usage
+# (NOTE: hostPath is not recommended in most production scenarios)
+hostPaths:
+  dockerSockPath: "/var/run/docker.sock"
+  dockerBinPath: "/usr/bin/docker"

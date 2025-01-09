@@ -1,0 +1,7 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: jenkins-casc
+data:
+  jenkins.yaml: |
+    {{- .Files.Get "casc_configs/jenkins.yaml" | nindent 4 }}
