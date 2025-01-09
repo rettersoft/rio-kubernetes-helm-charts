@@ -1,4 +1,6 @@
 global:
+  env:
+    PROJECT_ID: console
   certificate:
     # -- What type of TLS certificate should be used?
     #    Available options:
