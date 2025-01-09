@@ -3,16 +3,25 @@ kind: Ingress
 metadata:
   name: {{ include "console.fullname" . }}
   annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # Only add cert-manager.io/cluster-issuer annotation for Let's Encrypt
+    {{- if eq .Values.global.certificate.type "letsencrypt" }}
     cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+    {{- end }}
 spec:
   # TODO should be dynamic
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+      secretName:
+      {{- if eq .Values.global.certificate.type "letsencrypt" -}}
+      letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+      {{- else if eq .Values.global.certificate.type "custom" -}}
+      my-cert-tls
+      {{- end }}
   ingressClassName: nginx
   rules:
-    - host: k8-test-console.retter.io
+    - host: {{ .Values.ingress.host }}
       http:
         paths:
           - pathType: Prefix

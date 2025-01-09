@@ -1,3 +1,18 @@
+global:
+  certificate:
+    # -- What type of TLS certificate should be used?
+    #    Available options:
+    #    1) custom: A user-provided certificate.
+    #       - You must create your own secret, for example:
+    #         kubectl create secret tls my-cert-tls \
+    #           --cert /path/to/tls.crt \
+    #           --key /path/to/tls.key
+    #       - Reference that secret in your Helm chart as needed.
+    #    2) letsencrypt: Automatically request a certificate from Let's Encrypt.
+    #
+    #    Default is "custom".
+    type: custom
+
 replicaCount: 1
 image:
   repository: console
