@@ -80,7 +80,6 @@ spec:
         - name: docker-bin
           hostPath:
             path: {{ .Values.hostPaths.dockerBinPath }}
-            type: File
 
         - name: ssh-key
           configMap:

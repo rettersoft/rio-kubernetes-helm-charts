@@ -110,7 +110,6 @@ spec:
         - name: docker-bin
           hostPath:
             path: {{ .Values.hostPaths.dockerBinPath }}
-            type: File
 
         - name: jenkins-home
           persistentVolumeClaim:
