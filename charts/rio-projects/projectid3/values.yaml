@@ -17,11 +17,11 @@ service:
 
 resources:
   limits:
-    cpu: 1
-    memory: 512Mi
+    cpu: 0.5
+    memory: 256Mi
   requests:
-    cpu: 1
-    memory: 512Mi
+    cpu: 0.1
+    memory: 256i
     
 autoscaling:
   enabled: true
@@ -99,11 +99,11 @@ rio-api:
     targetCPUUtilizationPercentage: 70
   resources:
     limits:
-      cpu: 1
-      memory: 512Mi
+      cpu: 0.5
+      memory: 256Mi
     requests:
-      cpu: 1
-      memory: 512Mi
+      cpu: 0.1
+      memory: 256i
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
@@ -126,11 +126,11 @@ rio-rdk:
         name: config-secret-root-api-key
   resources:
     limits:
-      cpu: 1
-      memory: 512Mi
+      cpu: 0.5
+      memory: 256Mi
     requests:
-      cpu: 1
-      memory: 512Mi
+      cpu: 0.1
+      memory: 256i
   autoscaling:
     enabled: true
     minReplicas: 1
