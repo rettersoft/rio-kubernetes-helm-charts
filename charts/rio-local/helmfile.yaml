@@ -53,3 +53,11 @@ releases:
     namespace: default
     chart: ./vault
 
+  - name: supabase
+    namespace: default
+    chart: ./supabase
+
+  - name: jenkins
+    namespace: default
+    chart: ./jenkins
+
