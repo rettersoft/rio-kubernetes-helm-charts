@@ -13,6 +13,8 @@ A simple Node.js TypeScript HTTP server
 | autoscaling.maxReplicas | int | `5` |  |
 | autoscaling.minReplicas | int | `1` |  |
 | autoscaling.targetCPUUtilizationPercentage | int | `60` |  |
+| global.certificate.type | string | `"custom"` | What type of TLS certificate should be used?    Available options:    1) custom: A user-provided certificate.       - You must create your own secret, for example:         kubectl create secret tls my-cert-tls \           --cert /path/to/tls.crt \           --key /path/to/tls.key       - Reference that secret in your Helm chart as needed.    2) letsencrypt: Automatically request a certificate from Let's Encrypt.     Default is "custom". |
+| global.env.PROJECT_ID | string | `"console"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
 | image.repository | string | `"console"` |  |
 | image.tag | int | `11` |  |

@@ -28,12 +28,13 @@ vault:
     - path: "MONGO"
       data:
         MONGO_CONNECTION_STRING: 'mongodb://admin:password@mongo.default.svc.cluster.local:27017'
-    - path: "MINIO"
+    - path: "OBJECT_STORAGE"
       data:
-        MINIO_HOST: 'minio.minio.svc.cluster.local'
-        MINIO_PORT: 443
-        MINIO_ACCESS_KEY: 'admin'
-        MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
+        OBJECT_STORAGE_TYPE: 'minio'
+        OBJECT_STORAGE_HOST: 'minio.minio.svc.cluster.local'
+        OBJECT_STORAGE_PORT: 443
+        OBJECT_STORAGE_ACCESS_KEY: 'admin'
+        OBJECT_STORAGE_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
     - path: "JENKINS"
       data:
         JENKINS_HOST: 'jenkins.localhost'

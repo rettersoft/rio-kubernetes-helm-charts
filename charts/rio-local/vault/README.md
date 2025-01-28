@@ -18,9 +18,8 @@ A Helm chart for managing loki
 | vault.csi.enabled | bool | `false` |  |
 | vault.injector.enabled | bool | `false` |  |
 | vault.server.dataStorage.enabled | bool | `true` |  |
-| vault.server.dataStorage.storageClass | string | `"csi-disk"` |  |
 | vault.server.dev.enabled | bool | `false` |  |
-| vault.server.extraInitContainers[0].args[0] | string | `"wget -O /vault/bin/jq https://github.com/stedolan/jq/releases/latest/download/jq-linux64 && \\\nchmod +x /vault/bin/jq\n"` |  |
+| vault.server.extraInitContainers[0].args[0] | string | `"set -eux\nARCH=$(uname -m)\ncase \"$ARCH\" in x86_64)\nJQ_URL=\"https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64\"\n;;\narmv8*|aarch64*)\n# Adjust if your ARM binary has a different filename in the release\nJQ_URL=\"https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64\"\n;;\n*)\necho \"Unsupported architecture: $ARCH\"\nexit 1\n;;\nesac\n\nwget -O /vault/bin/jq \"$JQ_URL\"\nchmod +x /vault/bin/jq\n"` |  |
 | vault.server.extraInitContainers[0].command[0] | string | `"/bin/sh"` |  |
 | vault.server.extraInitContainers[0].command[1] | string | `"-c"` |  |
 | vault.server.extraInitContainers[0].image | string | `"alpine:latest"` |  |
@@ -29,11 +28,11 @@ A Helm chart for managing loki
 | vault.server.extraInitContainers[0].volumeMounts[0].name | string | `"vault-bin"` |  |
 | vault.server.ha.enabled | bool | `false` |  |
 | vault.server.ingress.enabled | bool | `true` |  |
-| vault.server.ingress.hosts[0].host | string | `"vault.213.250.133.230.nip.io"` |  |
+| vault.server.ingress.hosts[0].host | string | `"vault.localhost"` |  |
 | vault.server.ingress.hosts[0].paths[0] | string | `"/"` |  |
 | vault.server.ingress.ingressClassName | string | `"nginx"` |  |
-| vault.server.ingress.tls[0].hosts[0] | string | `"vault.213.250.133.230.nip.io"` |  |
-| vault.server.ingress.tls[0].secretName | string | `"vault-tls"` |  |
+| vault.server.ingress.tls[0].hosts[0] | string | `"vault.localhost"` |  |
+| vault.server.ingress.tls[0].secretName | string | `"my-tls-cert"` |  |
 | vault.server.postStart[0] | string | `"/bin/sh"` |  |
 | vault.server.postStart[1] | string | `"-c"` |  |
 | vault.server.postStart[2] | string | `"MAX_RETRIES=15 \nRETRY_COUNT=0\necho \"trying...\" >> /vault/init-script-bootstrap.log 2>&1\n\nsh /vault/unseal-script.sh >> /vault/unseal-script.log 2>&1  \necho \"unseal vault complete...\" >> /vault/init-script-bootstrap.log 2>&1\n\nwhile [ $RETRY_COUNT -lt $MAX_RETRIES ]; do\n  echo \"loop started...\" >> /vault/init-script-bootstrap.log 2>&1\n  token=$(cat /vault/data/seal.json | /vault/bin/jq -r .root_token)\n  vault login \"$token\" >> /vault/init-script-bootstrap.log 2>&1\n\n  if vault auth list; then\n    sh /vault/init-script.sh >> /vault/init-script-bootstrap.log 2>&1\n    break\n  fi\n\n  RETRY_COUNT=$((RETRY_COUNT + 1))\n  sleep 1\ndone  \n"` |  |

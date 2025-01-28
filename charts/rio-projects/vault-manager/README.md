@@ -27,11 +27,12 @@ A Helm chart for managing loki
 | vault.initialSecrets[2].path | string | `"SCHEDULER_REDIS"` |  |
 | vault.initialSecrets[3].data.MONGO_CONNECTION_STRING | string | `"mongodb://admin:password@mongo.default.svc.cluster.local:27017"` |  |
 | vault.initialSecrets[3].path | string | `"MONGO"` |  |
-| vault.initialSecrets[4].data.MINIO_ACCESS_KEY | string | `"admin"` |  |
-| vault.initialSecrets[4].data.MINIO_HOST | string | `"minio.minio.svc.cluster.local"` |  |
-| vault.initialSecrets[4].data.MINIO_PORT | int | `443` |  |
-| vault.initialSecrets[4].data.MINIO_SECRET_KEY | string | `"XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q"` |  |
-| vault.initialSecrets[4].path | string | `"MINIO"` |  |
+| vault.initialSecrets[4].data.OBJECT_STORAGE_ACCESS_KEY | string | `"admin"` |  |
+| vault.initialSecrets[4].data.OBJECT_STORAGE_HOST | string | `"minio.minio.svc.cluster.local"` |  |
+| vault.initialSecrets[4].data.OBJECT_STORAGE_PORT | int | `443` |  |
+| vault.initialSecrets[4].data.OBJECT_STORAGE_SECRET_KEY | string | `"XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q"` |  |
+| vault.initialSecrets[4].data.OBJECT_STORAGE_TYPE | string | `"minio"` |  |
+| vault.initialSecrets[4].path | string | `"OBJECT_STORAGE"` |  |
 | vault.initialSecrets[5].data.JENKINS_HOST | string | `"jenkins.localhost"` |  |
 | vault.initialSecrets[5].data.JENKINS_REMOTE_TRIGGER_TOKEN | string | `"api-user"` |  |
 | vault.initialSecrets[5].data.JENKINS_REMOTE_USER | string | `"api-user"` |  |
