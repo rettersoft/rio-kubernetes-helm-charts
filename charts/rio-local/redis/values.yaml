@@ -3,6 +3,9 @@ redis:
   auth:
     enabled: true
     password: password
+  master:
+    persistence:
+      size: 4Gi
   replica:
     enabled: false
     replicaCount: 0
@@ -11,3 +14,5 @@ redis:
         memory: "256Mi"
       limits:
         memory: "512Mi"
+  global:
+    #storageClass: "hi-iops-ssd"

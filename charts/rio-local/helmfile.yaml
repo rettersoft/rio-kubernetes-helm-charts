@@ -1,4 +1,3 @@
-
 repositories:
   - name: grafana
     url: https://grafana.github.io/helm-charts
@@ -10,29 +9,50 @@ repositories:
     url: https://kubernetes.github.io/ingress-nginx
 
 releases:
-  - name: loki
-    namespace: monitoring
-    chart: ./loki
-
-  - name: prometheus
-    namespace: monitoring
-    chart: ./prometheus
-
-  - name: grafana
-    namespace: monitoring
-    chart: ./grafana
+#  - name: loki
+#    namespace: monitoring
+#    chart: ./loki
+#    values:
+#      -  ./loki/values.yaml
+#      - ./storage-class-overrides.yaml
+#
+#  - name: prometheus
+#    namespace: monitoring
+#    chart: ./prometheus
+#    values:
+#      -  ./prometheus/values.yaml
+#      - ./storage-class-overrides.yaml
+#
+#  - name: grafana
+#    namespace: monitoring
+#    chart: ./grafana
+#    values:
+#      -  ./grafana/values.yaml
+#      - ./storage-class-overrides.yaml
 
   - name: redis
     chart: ./redis
+    values:
+      - ./redis/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: rabbitmq
     chart: ./rabbitmq
+    values:
+      - ./rabbitmq/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: scheduler-redis
     chart: ./scheduler-redis
+    values:
+      - ./scheduler-redis/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: mongo
     chart: ./mongo
+    values:
+      - ./mongo/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: ingress-nginx
     chart: ingress-nginx/ingress-nginx
@@ -44,6 +64,9 @@ releases:
   - name: minio-tenant
     namespace: minio
     chart: ./minio-tenant
+    values:
+      - ./minio-tenant/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: external-secrets
     namespace: default
@@ -52,12 +75,11 @@ releases:
   - name: vault
     namespace: default
     chart: ./vault
+    values:
+      - ./vault/values.yaml
+      - ./storage-class-overrides.yaml
 
-  - name: supabase
-    namespace: default
-    chart: ./supabase
-
-  - name: jenkins
-    namespace: default
-    chart: ./jenkins
+#  - name: jenkins
+#    namespace: default
+#    chart: ./jenkins
 

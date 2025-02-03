@@ -1,0 +1,6 @@
+ingress:
+  host: registry.2.57.212.245.nip.io
+  enabled: true
+global:
+  certificate:
+    type: letsencrypt

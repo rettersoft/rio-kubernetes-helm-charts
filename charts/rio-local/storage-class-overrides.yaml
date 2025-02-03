@@ -1,0 +1,39 @@
+
+# For the mongo chart (assuming your chart references `.Values.persistence.storageClassName`)
+mongo:
+  persistence:
+    storageClassName: "hi-iops-ssd"
+
+# For the vault chart (assuming the HashiCorp vault chart references `vault.server.standalone.dataStorage.storageClass`)
+vault:
+  server:
+    dataStorage:
+      storageClass: "hi-iops-ssd"
+
+# For the minio tenant chart
+tenant:
+  tenant:
+    pools:
+      - name: "main"
+        storageClassName: "hi-iops-ssd"
+        volumeClaimTemplate:
+          spec:
+            storageClassName: "hi-iops-ssd"
+
+# For the rabbitmq chart
+rabbitmq:
+  global:
+    storageClass: "hi-iops-ssd"
+
+
+# For the redis chart
+redis:
+  global:
+    storageClass: "hi-iops-ssd"
+
+# For the redis chart
+scheduler-redis:
+  global:
+    storageClass: "hi-iops-ssd"
+
+

@@ -1,0 +1,38 @@
+{{- if .Values.ingress.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: docker-registry-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # These annotations can help if you encounter issues with large image uploads/downloads
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+    # **these annotations added for fix:**
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    # **these annotations added for fix:**
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+    # Only add cert-manager.io/cluster-issuer annotation for Let's Encrypt
+    {{- if eq .Values.global.certificate.type "letsencrypt" }}
+    cert-manager.io/cluster-issuer: letsencrypt-registry
+    {{- end }}
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      secretName: letsencrypt-registry
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /
+            backend:
+              service:
+                name: docker-registry-cluster
+                port:
+                  number: 80
+{{- end }}

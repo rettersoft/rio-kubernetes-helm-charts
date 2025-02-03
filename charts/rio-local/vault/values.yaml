@@ -9,8 +9,7 @@ vault:
       enabled: false
     dataStorage:
       enabled: true
-      #storageClass: "csi-disk" # disk type
-
+      storageClass: "csi-disk" # disk type
     ingress:
       enabled: true
       ingressClassName: nginx

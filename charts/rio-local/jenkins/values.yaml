@@ -49,7 +49,7 @@ persistence:
 # (NOTE: hostPath is not recommended in most production scenarios)
 hostPaths:
   dockerSockPath: "/var/run/docker.sock"
-  dockerBinPath: "/usr/local/bin/docker"
+  dockerBinPath: "/Applications/OrbStack.app/Contents/MacOS/xbin/docker"
 # for macos system path
 #  dockerSockPath: "/var/run/docker.sock"
 #  dockerBinPath: "/usr/bin/docker"

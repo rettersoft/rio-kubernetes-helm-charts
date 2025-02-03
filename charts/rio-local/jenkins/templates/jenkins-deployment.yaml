@@ -51,6 +51,9 @@ spec:
         - name: jenkins
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          securityContext:
+            runAsUser: 1000       # UID of the user inside the container
+            runAsGroup: 1000      # GID of the user inside the container
           env:
             {{- range .Values.masterEnv }}
             - name: {{ .name }}
@@ -110,6 +113,7 @@ spec:
         - name: docker-bin
           hostPath:
             path: {{ .Values.hostPaths.dockerBinPath }}
+            type: File
 
         - name: jenkins-home
           persistentVolumeClaim:

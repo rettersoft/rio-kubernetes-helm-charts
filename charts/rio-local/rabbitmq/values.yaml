@@ -5,6 +5,9 @@ rabbitmq:
   extraPlugins: "rabbitmq_consistent_hash_exchange rabbitmq_delayed_message_exchange"
   clustering:
     enabled: false
+  global:
+    storageClass: "csi-disk"
+
 
 
 

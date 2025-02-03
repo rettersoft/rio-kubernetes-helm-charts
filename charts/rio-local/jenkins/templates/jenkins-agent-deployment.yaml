@@ -52,6 +52,9 @@ spec:
         - name: jenkins-agent
           image: "{{ .Values.agentImage.repository }}:{{ .Values.agentImage.tag }}"
           imagePullPolicy: {{ .Values.agentImage.pullPolicy }}
+          securityContext:
+            runAsUser: 1000       # UID of the user inside the container
+            runAsGroup: 1000      # GID of the user inside the container
           env:
             {{- range .Values.agentEnv }}
             - name: {{ .name }}
@@ -59,6 +62,7 @@ spec:
             {{- end }}
           command: [ "jenkins-agent" ]
           args: {{ toJson .Values.agentCommandArgs }}
+
           volumeMounts:
             - name: kubeconfig-vol
               mountPath: /home/jenkins/.kube
@@ -80,6 +84,7 @@ spec:
         - name: docker-bin
           hostPath:
             path: {{ .Values.hostPaths.dockerBinPath }}
+            type: File
 
         - name: ssh-key
           configMap:

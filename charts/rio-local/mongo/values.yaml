@@ -1,10 +1,17 @@
 replicaCount: 1
 
+# for x86 use this
 image:
-  repository: arm64v8/mongo
-  tag: 7.0
+  repository: mongo
+  tag: 7
   pullPolicy: IfNotPresent
 
+# for arm64 use this instead
+#image:
+#  repository: arm64v8/mongo
+#  tag: 7.0
+#  pullPolicy: IfNotPresent
+#
 service:
   type: ClusterIP
   port: 27017
@@ -18,6 +25,7 @@ persistence:
   enabled: true
   accessMode: ReadWriteOnce
   size: 8Gi
+  storageClassName: "csi-disk"
 
 resources: {}
 nodeSelector: {}
