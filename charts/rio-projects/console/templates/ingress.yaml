@@ -13,12 +13,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName:
-      {{- if eq .Values.global.certificate.type "letsencrypt" -}}
-      letsencrypt-{{ .Values.global.env.PROJECT_ID }}
-      {{- else if eq .Values.global.certificate.type "custom" -}}
-      my-cert-tls
-      {{- end }}
+      secretName: {{ if eq .Values.global.certificate.type "letsencrypt" }}letsencrypt-{{ .Values.global.env.PROJECT_ID }}{{ else if eq .Values.global.certificate.type "custom" }}my-cert-tls{{ end }}
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
