@@ -7,7 +7,7 @@ projects:
       fromSecret:
         - redis-secrets
         - jenkins-secrets
-        - minio-secrets
+        - object-storage-secrets
         - config-secret-root-api-key
         - config-storage
         - mongo-secrets
