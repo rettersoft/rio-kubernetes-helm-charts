@@ -21,9 +21,9 @@ dependencies:
   - name: rio-scheduler-cron-consumer
     version: 0.1.0
     repository: file://../../rio-common/rio-scheduler-cron-consumer
-  - name: rio-scheduler-dashboard
-    version: 0.1.0
-    repository: file://../../rio-common/rio-scheduler-dashboard
+#  - name: rio-scheduler-dashboard
+#    version: 0.1.0
+#    repository: file://../../rio-common/rio-scheduler-dashboard
   - name: rio-rdk
     version: 0.1.0
     repository: file://../../rio-common/rio-rdk
