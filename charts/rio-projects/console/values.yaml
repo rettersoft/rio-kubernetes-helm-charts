@@ -13,7 +13,7 @@ global:
     #    2) letsencrypt: Automatically request a certificate from Let's Encrypt.
     #
     #    Default is "custom".
-    type: custom
+    type: letsencrypt
 
 replicaCount: 1
 image:
