@@ -16,9 +16,9 @@ spec:
       # Use the appropriate secretName based on the certificate type
       secretName: {{- if eq .Values.global.certificate.type "letsencrypt" -}}
         letsencrypt-{{ .Values.global.env.PROJECT_ID }}
-         {{- else if eq .Values.global.certificate.type "custom" -}}
+      {{- else if eq .Values.global.certificate.type "custom" -}}
         my-cert-tls
-         {{- end }}
+      {{- end }}
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
