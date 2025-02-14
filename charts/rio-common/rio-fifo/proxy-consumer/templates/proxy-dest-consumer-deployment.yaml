@@ -1,4 +1,4 @@
-{{- range $index, $queue := .Values.global.queues }}
+{{- range $index, $queue := .Values.global.destinations }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
