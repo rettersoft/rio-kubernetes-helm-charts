@@ -1,7 +1,9 @@
 {{/*{{ range $index := until (int .Values.proxyGroup) }}*/}}
 {{- range $index, $queue := .Values.global.queues }}
 
- # If you were to use .Values within a range loop, it might cause unintended behavior
+{{- range $consumerIndex, $consumer := $queue.consumers }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queue.name)) }}
+  # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 
@@ -9,18 +11,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "proxy-consumer.fullname" $ }}-class-{{ $index }}
+  name: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
   labels:
-    app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $index }}
+    app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $index }}
+      app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
   template:
     metadata:
       labels:
-        app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $index }}
+        app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -37,6 +39,12 @@ spec:
 {{/*              value: {{ $index | quote }}*/}}
 {{/*            - name: PROXY_QUEUE_GROUP_SIZE*/}}
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_CONSUMER_PARTITIONS
+              value: {{ $consumer | quote }}
+            - name: RIO_QUEUE_PARTITIONS
+              value: {{ $consumerIndex | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -49,7 +57,7 @@ spec:
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
       containers:
-        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $index }}
+        - name: {{ include "proxy-consumer.fullname" $ }}-{{ $modifiedQueueName }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           {{- if $.Values.class.command }}
           command: {{ $.Values.class.command | toYaml | nindent 12 }}
@@ -65,6 +73,12 @@ spec:
 {{/*              value: {{ $index | quote }}*/}}
 {{/*            - name: PROXY_QUEUE_GROUP_SIZE*/}}
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
+            - name: RIO_CLASS_QUEUE_NAME
+              value: {{ $queue.name }}
+            - name: RIO_QUEUE_CONSUMER_PARTITIONS
+              value: {{ $consumer | quote }}
+            - name: RIO_QUEUE_PARTITIONS
+              value: {{ $consumerIndex | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -98,4 +112,5 @@ spec:
         - name: sys
           hostPath:
             path: /sys
+{{- end }}
 {{- end }}
