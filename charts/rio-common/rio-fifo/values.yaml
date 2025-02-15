@@ -1,21 +1,10 @@
 global:
   queues:
-    - name: MainTests
-      class: MainTests
+    MainTests:
       partitions: 1
-      consumers:
-        - 0-1
-    - name: FifoTests
-      class: FifoTests
-      partitions: 1
-      consumers:
-        - 0-1
   destinations:
-    - name: state_stream_firestore
-      class: state_stream_firestore
+    state_stream_firestore:
       partitions: 1
-      consumers:
-        - 0-1
   env:
     PROJECT_ID: ${PROJECT_ID}
     MINIO_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'

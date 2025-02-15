@@ -1,4 +1,6 @@
-{{- range $index, $queue := .Values.global.destinations }}
+{{- range $queueName, $queueConfig := .Values.global.destinations }}
+{{- range $partitionIndex, $_ := until $queueConfig.partitions }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queueName)) }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
@@ -7,18 +9,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
+  name: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
   labels:
-    app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
+    app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
+      app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
   template:
     metadata:
       labels:
-        app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $index }}
+        app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -32,11 +34,11 @@ spec:
           command: ["node", "/opt/core-extension/dist/src/init/init-fifo.js"]
           env:
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queue.name }}
+              value: {{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: "0-1"
+              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
-              value: "1"
+              value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -49,7 +51,7 @@ spec:
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
       containers:
-        - name: {{ include "proxy-consumer.fullname" $ }}-d-{{ $index }}
+        - name: {{ include "proxy-consumer.fullname" $ }}-d-{{ $modifiedQueueName }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           {{- if $.Values.destination.command }}
           command: {{ $.Values.destination.command | toYaml | nindent 12 }}
@@ -62,12 +64,11 @@ spec:
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queue.name }}
+              value: {{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $queue.consumers | quote }}
-            # proxy-class main queue got this value from config map but we do not in destination
+              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
-              value: "1"
+              value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}

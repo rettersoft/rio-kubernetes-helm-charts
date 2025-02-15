@@ -1,9 +1,11 @@
 {{/*{{ range $index := until (int .Values.proxyGroup) }}*/}}
-{{- range $index, $queue := .Values.global.queues }}
+{{- range $queueName, $queueConfig := .Values.global.queues }}
 
-{{- range $consumerIndex, $consumer := $queue.consumers }}
-{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queue.name)) }}
-  # If you were to use .Values within a range loop, it might cause unintended behavior
+
+{{- range $partitionIndex, $_ := until $queueConfig.partitions }}
+
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queueName)) }}
+# If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
 # which might not have the .Values fields:
 
@@ -40,11 +42,11 @@ spec:
 {{/*            - name: PROXY_QUEUE_GROUP_SIZE*/}}
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queue.name }}
+              value: {{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $consumer | quote }}
+              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
-              value: {{ $consumerIndex | quote }}
+              value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
@@ -74,11 +76,11 @@ spec:
 {{/*            - name: PROXY_QUEUE_GROUP_SIZE*/}}
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queue.name }}
+              value: {{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $consumer | quote }}
+              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
-              value: {{ $consumerIndex | quote }}
+              value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
