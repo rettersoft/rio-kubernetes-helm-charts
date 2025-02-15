@@ -101,3 +101,4 @@ spec:
           hostPath:
             path: /sys
 {{- end }}
+{{- end }}
