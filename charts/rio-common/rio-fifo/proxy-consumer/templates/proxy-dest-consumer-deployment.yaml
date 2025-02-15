@@ -1,5 +1,5 @@
 {{- range $queueName, $queueConfig := .Values.global.destinations }}
-{{- range $partitionIndex, $_ := until $queueConfig.partitions }}
+{{- range $partitionIndex, $_ := until (int $queueConfig.partitions) }}
 {{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queueName)) }}
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
