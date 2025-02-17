@@ -1,7 +1,9 @@
 {{- range $queueName, $queueConfig := .Values.global.destinations }}
 {{- range $partitionIndex, $_ := until (int $queueConfig.partitions) }}
-{{- $tmp := replace (lower $queueName) "_" "-" }}
-{{- $modifiedQueueName := (regexReplaceAll "[^a-z0-9-]+" "-" $tmp) | trunc 20 | trimSuffix "-" }}
+{{- $tmp := replace "_" "-" (lower $queueName) }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-"  (substr 0 20 $tmp) }}
+
+
 
   # If you were to use .Values within a range loop, it might cause unintended behavior
 # because .Values would be scoped to the loop's current item if not override,
