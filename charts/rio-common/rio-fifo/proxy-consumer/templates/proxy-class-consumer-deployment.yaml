@@ -36,8 +36,6 @@ spec:
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
             - name: RIO_CLASS_QUEUE_NAME
               value: {{ $queueName }}
-            - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
               value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
@@ -70,8 +68,6 @@ spec:
 {{/*              value: {{  $.Values.proxyGroupSize | quote }}*/}}
             - name: RIO_CLASS_QUEUE_NAME
               value: {{ $queueName }}
-            - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
               value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
