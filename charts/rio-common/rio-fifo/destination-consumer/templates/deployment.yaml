@@ -1,25 +1,25 @@
-{{- range $index, $queue := .Values.global.destinations }}
-# If you were to use .Values within a range loop, it might cause unintended behavior
-# because .Values would be scoped to the loop's current item if not override,
-# which might not have the .Values fields:
-{{- range $consumerIndex, $consumer := $queue.consumers }}
+{{- range $queueName, $queueConfig := .Values.global.destinations }}
+{{- range $partitionIndex, $_ := until (int $queueConfig.partitions) }}
+{{- $tmp := replace "_" "-" (lower $queueName) }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-"  (substr 0 20 $tmp) }}
+
 
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "destination-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+  name: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
   labels:
-    app: {{ include "destination-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+    app: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ include "destination-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+      app: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
   template:
     metadata:
       labels:
-        app: {{ include "destination-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+        app: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -28,7 +28,7 @@ spec:
         - name: {{ $.Values.global.image.pullSecret }}
       {{- end }}
       containers:
-        - name: {{ include "destination-consumer.fullname" $ }}-{{ $index }}-{{ $consumerIndex }}
+        - name: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
           image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           {{- if $.Values.command }}
           command: {{ $.Values.command | toYaml | nindent 12 }}
@@ -41,11 +41,11 @@ spec:
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queue.name }}
+              value: {{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
-              value: {{ $consumer | quote }}
+              value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
-              value: "1"
+              value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
