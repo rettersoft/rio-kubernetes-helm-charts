@@ -28,6 +28,17 @@ jenkins:
     authorizationStrategy:
         loggedInUsersCanDoAnything:
             allowAnonymousRead: false
+    globalNodeProperties:
+      - envVars:
+          env:
+            - key: CLOUD_PROVIDER
+              value: "${CLOUD_PROVIDER}"
+            - key: CLUSTER_NAME
+              value: "${CLUSTER_NAME}"
+            - key: CLUSTER_PROJECT
+              value: "${CLUSTER_PROJECT}"
+            - key: CLUSTER_REGION_OR_ZONE
+              value: "${CLUSTER_REGION_OR_ZONE}"
 
 credentials:
   system:
