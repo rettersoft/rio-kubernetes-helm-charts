@@ -1,0 +1,55 @@
+{{- if .Values.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
+  annotations:
+    nginx.ingress.kubernetes.io/force-ssl-redirect: "false"
+    # Only add cert-manager.io/cluster-issuer annotation for Let's Encrypt
+    {{- if eq .Values.global.certificate.type "letsencrypt" }}
+    cert-manager.io/cluster-issuer: letsencrypt-{{ .Values.global.env.PROJECT_ID }}
+    {{- end }}
+
+    # Enable WebSocket support (newer versions often auto-detect websockets)
+    nginx.ingress.kubernetes.io/enable-websocket: "true"
+
+    # Increase timeouts to keep WebSocket connections open
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+    nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+
+    # Use HTTP/1.1 so that Upgrade headers are respected
+    nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
+
+    # (Optional) Sticky session configuration if needed.
+    # Uncomment if you want to enable session affinity via cookies.
+    # nginx.ingress.kubernetes.io/affinity: "cookie"
+    # nginx.ingress.kubernetes.io/session-cookie-name: "route"
+
+    # Add a configuration snippet to set custom headers (if needed)
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      # If $http_upgrade is empty, close the connection. (This replicates your map logic.)
+      set $connection_upgrade "";
+      if ($http_upgrade) {
+          set $connection_upgrade "upgrade";
+      }
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
+spec:
+  tls:
+    - hosts:
+        - {{ .Values.ingress.host }}
+      # Use the appropriate secretName based on the certificate type
+      secretName: {{ if eq .Values.global.certificate.type "letsencrypt" }}letsencrypt-{{ .Values.global.env.PROJECT_ID }}{{ else if eq .Values.global.certificate.type "custom" }}my-cert-tls{{ end }}
+  ingressClassName: nginx
+  rules:
+    - host: {{ .Values.ingress.host }}
+      http:
+        paths:
+          - pathType: Prefix
+            path: /{{ .Values.global.env.PROJECT_ID }}
+            backend:
+              service:
+                name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
+                port:
+                  number: 80
+{{- end }}

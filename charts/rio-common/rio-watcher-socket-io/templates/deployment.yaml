@@ -1,0 +1,73 @@
+{{- if .Values.enabled }}
+{{- range $index, $className := .Values.global.classes }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-"  (substr 0 20 $className) }}
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "rio-watcher-socket-io.fullname" . }}
+  labels:
+    app: {{ include "rio-watcher-socket-io.fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ include "rio-watcher-socket-io.fullname" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ include "rio-watcher-socket-io.fullname" . }}
+      annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
+    spec:
+      dnsPolicy: ClusterFirst
+      {{- if .Values.global.image.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.global.image.pullSecret }}
+      {{- end }}
+      containers:
+        - name: {{ include "rio-watcher-socket-io.fullname" . }}
+          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          imagePullPolicy: Always
+          {{- if .Values.command }}
+          command: {{ .Values.command | toYaml | nindent 12 }}
+          {{- end }}
+          env:
+            - name: SERVICE_NAME
+              value: {{ include "rio-watcher-socket-io.fullname" . }}
+            - name: RELEASE_NAME
+              value: {{ .Release.Name }}
+            {{- range $key, $value := .Values.global.env }}
+            - name: {{ $key }}
+              value: {{ $value | quote }}
+            {{- end }}
+          envFrom:
+            {{- if .Values.global.envFrom }}
+            {{- toYaml .Values.global.envFrom | nindent 12 }}
+            {{- end }}
+            {{- if .Values.envFrom }}
+            {{- toYaml .Values.envFrom | nindent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: {{ .Values.service.targetPort }}
+            - containerPort: {{ .Values.service.debugPort }}
+          resources:
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+      nodeSelector: {{ toYaml .Values.nodeSelector | nindent 8 }}
+      tolerations: {{ toYaml .Values.tolerations | nindent 8 }}
+      affinity: {{ toYaml .Values.affinity | nindent 8 }}
+      volumes:
+        - name: proc
+          hostPath:
+            path: /proc
+        - name: sys
+          hostPath:
+            path: /sys
+
+{{- end -}}
+{{- end }}

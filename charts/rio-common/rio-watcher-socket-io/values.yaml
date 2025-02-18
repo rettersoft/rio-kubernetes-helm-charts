@@ -1,0 +1,47 @@
+enabled: true
+replicaCount: 1
+image:
+  repository: rio-watcher-socket-io
+  tag: 11
+  pullPolicy: IfNotPresent
+
+service:
+  type: ClusterIP
+  port: 80
+  targetPort: 80
+  debugPort: 9229
+
+ingress:
+  host: socket.localhost
+  certificateSecret: my-cert-tls
+  enabled: true
+  path: /
+
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+command:
+  - node
+  - /opt/core-extension/dist/src/bin/api.js
+
+# -- Creates HPA
+autoscaling:
+  # -- Creates HPA
+  enabled: true
+  # -- Min Replicas
+  minReplicas: 1
+  # -- Max Replicas
+  maxReplicas: 5
+  # -- Target Cpu Utilization Percentage
+  targetCPUUtilizationPercentage: 60
