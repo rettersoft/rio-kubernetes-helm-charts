@@ -20,6 +20,9 @@ metadata:
     # Use HTTP/1.1 so that Upgrade headers are respected
     nginx.ingress.kubernetes.io/proxy-http-version: "1.1"
 
+    nginx.ingress.kubernetes.io/rewrite-target: /
+
+
     # (Optional) Sticky session configuration if needed.
     # Uncomment if you want to enable session affinity via cookies.
     # nginx.ingress.kubernetes.io/affinity: "cookie"
