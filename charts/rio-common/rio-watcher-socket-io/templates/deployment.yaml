@@ -48,15 +48,15 @@ spec:
             {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
           ports:
-            - containerPort: {{ .Values.service.targetPort }}
-            - containerPort: {{ .Values.service.debugPort }}
+            - containerPort: {{ $.Values.service.targetPort }}
+            - containerPort: {{ $.Values.service.debugPort }}
           resources:
             limits:
-              cpu: {{ .Values.resources.limits.cpu }}
-              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ $.Values.resources.limits.cpu }}
+              memory: {{ $.Values.resources.limits.memory }}
             requests:
-              cpu: {{ .Values.resources.requests.cpu }}
-              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ $.Values.resources.requests.cpu }}
+              memory: {{ $.Values.resources.requests.memory }}
       volumes:
         - name: proc
           hostPath:
