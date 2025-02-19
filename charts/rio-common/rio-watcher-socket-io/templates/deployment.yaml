@@ -26,8 +26,8 @@ spec:
         - name: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
           imagePullPolicy: IfNotPresent
-          {{- if .Values.command }}
-          command: {{ .Values.command | toYaml | nindent 12 }}
+          {{- if $.Values.command }}
+          command: {{ $.Values.command | toYaml | nindent 12 }}
           {{- end }}
           env:
             - name: SERVICE_NAME
