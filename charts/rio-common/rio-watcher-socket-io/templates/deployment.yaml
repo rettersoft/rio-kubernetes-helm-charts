@@ -10,7 +10,7 @@ metadata:
   labels:
     app: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}

@@ -6,7 +6,7 @@ metadata:
   labels:
     app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
