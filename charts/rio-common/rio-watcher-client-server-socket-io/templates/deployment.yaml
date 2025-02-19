@@ -2,7 +2,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}-
+  name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
   labels:
     app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
 spec:
