@@ -246,7 +246,7 @@ rio-watcher-client-server-socket-io:
     targetCPUUtilizationPercentage: 80
   command:
     - node
-    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+    - /opt/core-extension/dist/src/bin/watcher-client-socket.js
 
 rio-watcher-socket-io:
   envFrom:
@@ -262,7 +262,7 @@ rio-watcher-socket-io:
     targetCPUUtilizationPercentage: 80
   command:
     - node
-    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+    - /opt/core-extension/dist/src/bin/watcher-mongo-socket.js
 
 
 rio-scheduler-dashboard:
