@@ -17,10 +17,6 @@ spec:
 
     spec:
       dnsPolicy: ClusterFirst
-      {{- if .Values.global.image.pullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.global.image.pullSecret }}
-      {{- end }}
       containers:
         - name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"

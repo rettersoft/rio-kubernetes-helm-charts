@@ -21,14 +21,11 @@ spec:
 
     spec:
       dnsPolicy: ClusterFirst
-      {{- if .Values.global.image.pullSecret }}
-      imagePullSecrets:
-        - name: {{ .Values.global.image.pullSecret }}
-      {{- end }}
+
       containers:
         - name: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
-          imagePullPolicy: Always
+          imagePullPolicy: IfNotPresent
           {{- if .Values.command }}
           command: {{ .Values.command | toYaml | nindent 12 }}
           {{- end }}
@@ -44,11 +41,11 @@ spec:
               value: {{ $value | quote }}
             {{- end }}
           envFrom:
-            {{- if .Values.global.envFrom }}
-            {{- toYaml .Values.global.envFrom | nindent 12 }}
+            {{- if $.Values.global.envFrom }}
+            {{- toYaml $.Values.global.envFrom | nindent 12 }}
             {{- end }}
-            {{- if .Values.envFrom }}
-            {{- toYaml .Values.envFrom | nindent 12 }}
+            {{- if $.Values.envFrom }}
+            {{- toYaml $.Values.envFrom | nindent 12 }}
             {{- end }}
           ports:
             - containerPort: {{ .Values.service.targetPort }}
