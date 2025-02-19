@@ -1,3 +1,4 @@
+{{- if false}}
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -68,8 +69,8 @@ spec:
               mountPath: /home/jenkins/.kube
             - name: docker-sock
               mountPath: /var/run/docker.sock
-            - name: docker-bin
-              mountPath: /usr/bin/docker
+{{/*            - name: docker-bin*/}}
+{{/*              mountPath: /usr/bin/docker*/}}
             - name: projects-config
               mountPath: /bitnami/jenkins/projects-config
             - name: ssh-key
@@ -81,10 +82,10 @@ spec:
           hostPath:
             path: {{ .Values.hostPaths.dockerSockPath }}
             type: Socket
-        - name: docker-bin
-          hostPath:
-            path: {{ .Values.hostPaths.dockerBinPath }}
-            type: File
+{{/*        - name: docker-bin*/}}
+{{/*          hostPath:*/}}
+{{/*            path: {{ .Values.hostPaths.dockerBinPath }}*/}}
+{{/*            type: File*/}}
 
         - name: ssh-key
           configMap:
@@ -99,3 +100,4 @@ spec:
             items:
               - key: projects-config.yaml
                 path: projects-config.yaml
+{{- end }}

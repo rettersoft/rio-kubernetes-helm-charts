@@ -17,6 +17,9 @@ spec:
         component: master
     spec:
       serviceAccountName: jenkins-sa
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 20
       initContainers:
         - name: kubeconfig-init
           image: busybox:latest
@@ -53,7 +56,7 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           securityContext:
             runAsUser: 1000       # UID of the user inside the container
-            runAsGroup: 1000      # GID of the user inside the container
+            runAsGroup: 0      # GID of the user inside the container
           env:
             {{- range .Values.masterEnv }}
             - name: {{ .name }}
@@ -75,8 +78,8 @@ spec:
               mountPath: /bitnami/jenkins/projects-config
             - name: docker-sock
               mountPath: /var/run/docker.sock
-            - name: docker-bin
-              mountPath: /usr/bin/docker
+{{/*            - name: docker-bin*/}}
+{{/*              mountPath: /usr/bin/docker*/}}
             - name: jenkins-home
               mountPath: /var/jenkins_home
       volumes:
@@ -110,10 +113,10 @@ spec:
             path: {{ .Values.hostPaths.dockerSockPath }}
             type: Socket
 
-        - name: docker-bin
-          hostPath:
-            path: {{ .Values.hostPaths.dockerBinPath }}
-            type: File
+{{/*        - name: docker-bin*/}}
+{{/*          hostPath:*/}}
+{{/*            path: {{ .Values.hostPaths.dockerBinPath }}*/}}
+{{/*            type: File*/}}
 
         - name: jenkins-home
           persistentVolumeClaim:

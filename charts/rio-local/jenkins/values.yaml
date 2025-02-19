@@ -48,7 +48,7 @@ persistence:
 # Host paths to match your Docker Compose usage
 # (NOTE: hostPath is not recommended in most production scenarios)
 hostPaths:
-  dockerSockPath: "/var/run/docker.sock"
+  dockerSockPath: "/Users/mustafaacar/.orbstack/run/docker.sock"
   dockerBinPath: "/Applications/OrbStack.app/Contents/MacOS/xbin/docker"
 # for macos system path
 #  dockerSockPath: "/var/run/docker.sock"
