@@ -14,7 +14,7 @@ spec:
     metadata:
       labels:
         app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
-      annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
+
     spec:
       dnsPolicy: ClusterFirst
       {{- if .Values.global.image.pullSecret }}
