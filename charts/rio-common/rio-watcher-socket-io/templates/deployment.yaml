@@ -6,18 +6,18 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "rio-watcher-socket-io.fullname" . }}
+  name: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
   labels:
-    app: {{ include "rio-watcher-socket-io.fullname" . }}
+    app: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "rio-watcher-socket-io.fullname" . }}
+      app: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
   template:
     metadata:
       labels:
-        app: {{ include "rio-watcher-socket-io.fullname" . }}
+        app: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
       annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
@@ -26,7 +26,7 @@ spec:
         - name: {{ .Values.global.image.pullSecret }}
       {{- end }}
       containers:
-        - name: {{ include "rio-watcher-socket-io.fullname" . }}
+        - name: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
           image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
           imagePullPolicy: Always
           {{- if .Values.command }}
@@ -34,7 +34,7 @@ spec:
           {{- end }}
           env:
             - name: SERVICE_NAME
-              value: {{ include "rio-watcher-socket-io.fullname" . }}
+              value: {{ include "rio-watcher-socket-io.fullname" . }}-{{ $modifiedQueueName }}
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
             {{- range $key, $value := .Values.global.env }}
