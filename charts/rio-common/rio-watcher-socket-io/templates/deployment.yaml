@@ -37,6 +37,8 @@ spec:
               value: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
+            - name: CLASS_NAME
+              value: {{ $className }}
             {{- range $key, $value := .Values.global.env }}
             - name: {{ $key }}
               value: {{ $value | quote }}
