@@ -1,6 +1,6 @@
 {{- if .Values.enabled }}
 {{- range $index, $className := .Values.global.classes }}
-{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-"  (substr 0 20 $className) }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-"  (lower (substr 0 20 $className)) }}
 
 ---
 apiVersion: apps/v1
