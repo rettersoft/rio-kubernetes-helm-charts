@@ -232,6 +232,39 @@ rio-scheduler-task-consumer:
     - node
     - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
 
+rio-watcher-client-server-socket-io:
+  envFrom:
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+
+rio-watcher-socket-io:
+  envFrom:
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: config-storage
+  autoscaling:
+    minReplicas: 1
+    maxReplicas: 1
+    targetCPUUtilizationPercentage: 80
+  command:
+    - node
+    - /opt/core-extension/dist/src/bin/scheduler-task-consumer.js
+
+
 rio-scheduler-dashboard:
   envFrom:
     - secretRef:

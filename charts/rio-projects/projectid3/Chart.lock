@@ -14,11 +14,14 @@ dependencies:
 - name: rio-scheduler-cron-consumer
   repository: file://../../rio-common/rio-scheduler-cron-consumer
   version: 0.1.0
-- name: rio-scheduler-dashboard
-  repository: file://../../rio-common/rio-scheduler-dashboard
-  version: 0.1.0
 - name: rio-rdk
   repository: file://../../rio-common/rio-rdk
   version: 0.1.0
-digest: sha256:7fc98e193f6857c5e9cbb63e0759ed5c2a13561a38794c60276ffdf6ccf4de13
-generated: "2024-12-18T15:23:08.318639+03:00"
+- name: rio-watcher-socket-io
+  repository: file://../../rio-common/rio-watcher-socket-io
+  version: 0.1.0
+- name: rio-watcher-client-server-socket-io
+  repository: file://../../rio-common/rio-watcher-client-server-socket-io
+  version: 0.1.0
+digest: sha256:afbcbeba0328f96d08aeabc67306a697fdadee8ac64d75c277de9176f6587778
+generated: "2025-02-19T12:58:07.349537+03:00"
