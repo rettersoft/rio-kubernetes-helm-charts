@@ -24,7 +24,7 @@ spec:
 
       containers:
         - name: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
-          image: "{{ $.Values.image.repository }}:{{ $.Values.image.tag }}"
+          image: "{{ $.Values.global.image.repository }}:{{ $.Values.global.image.tag }}"
           imagePullPolicy: IfNotPresent
           {{- if $.Values.command }}
           command: {{ $.Values.command | toYaml | nindent 12 }}
