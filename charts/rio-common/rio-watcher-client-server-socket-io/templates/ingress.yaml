@@ -28,7 +28,15 @@ metadata:
     # nginx.ingress.kubernetes.io/affinity: "cookie"
     # nginx.ingress.kubernetes.io/session-cookie-name: "route"
 
-    nginx.ingress.kubernetes.io/websocket-services: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
+    # Add a configuration snippet to set custom headers (if needed)
+    nginx.ingress.kubernetes.io/configuration-snippet: |
+      # If $http_upgrade is empty, close the connection. (This replicates your map logic.)
+      set $connection_upgrade "";
+      if ($http_upgrade) {
+          set $connection_upgrade "upgrade";
+      }
+      proxy_set_header Upgrade $http_upgrade;
+      proxy_set_header Connection $connection_upgrade;
 spec:
   tls:
     - hosts:
