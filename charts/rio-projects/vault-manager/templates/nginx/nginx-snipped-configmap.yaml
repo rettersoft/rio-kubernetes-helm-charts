@@ -1,7 +1,0 @@
-kind: ConfigMap
-apiVersion: v1
-metadata:
-  name: nginx-configuration
-  namespace: default
-data:
-  enable-snippets: "true"
