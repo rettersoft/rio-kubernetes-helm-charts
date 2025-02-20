@@ -22,7 +22,7 @@ spec:
   tls:
     - hosts:
         - {{ .Values.ingress.host }}
-      secretName: letsencrypt-registry
+      secretName: {{ if eq .Values.global.certificate.type "letsencrypt" }}letsencrypt-registry{{ else if eq .Values.global.certificate.type "custom" }}my-cert-tls{{ end }}
   ingressClassName: nginx
   rules:
     - host: {{ .Values.ingress.host }}
