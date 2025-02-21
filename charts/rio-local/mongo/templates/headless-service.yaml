@@ -1,0 +1,14 @@
+# Service for internal communication (headless) - needed by the StatefulSet
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongo-headless
+  labels:
+    app: mongo
+spec:
+  ports:
+    - port: 27017
+      name: mongodb
+  clusterIP: None
+  selector:
+    app: mongo

@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ include "mongo.name" . }}
 spec:
-  serviceName: "mongo"
+  serviceName: mongo-headless
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
@@ -15,10 +15,47 @@ spec:
       labels:
         app: {{ include "mongo.name" . }}
     spec:
+      securityContext:
+        fsGroup: 999
+        runAsUser: 999
+        runAsGroup: 999
+      volumes:
+        - name: mongo-keyfile
+          secret:
+            secretName: mongo-keyfile
+            defaultMode: 0600
+        - name: keyfile-tmp
+          emptyDir: { }
+      initContainers:
+        - name: init-keyfile
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          command:
+            - /bin/sh
+            - -c
+            - |
+              mkdir -p /opt/keyfile-tmp
+              cp /etc/mongo-keyfile/keyfile /opt/keyfile-tmp/
+              chmod 400 /opt/keyfile-tmp/keyfile
+              chown 999:999 /opt/keyfile-tmp/keyfile
+          volumeMounts:
+            - name: mongo-keyfile
+              mountPath: /etc/mongo-keyfile
+              readOnly: true
+            - name: keyfile-tmp
+              mountPath: /opt/keyfile-tmp
+          securityContext:
+            runAsUser: 0
       containers:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /usr/local/bin/docker-entrypoint.sh
+          args:
+            - mongod
+            - --bind_ip_all
+            - --replSet=rs0
+            - --keyFile=/opt/keyfile-tmp/keyfile
           ports:
             - containerPort: 27017
           env:
@@ -35,6 +72,34 @@ spec:
           volumeMounts:
             - name: mongodb-data
               mountPath: /data/db
+            - name: keyfile-tmp
+              mountPath: /opt/keyfile-tmp
+              readOnly: true
+          # Simple postStart hook to initialize the replica set once the pod starts
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - |
+                    # Wait for mongod to fully start
+                    echo "Waiting for mongod to start..."
+                    until mongosh --host localhost --eval "print(\"Mongo is up\")" >/dev/null 2>&1; do
+                      sleep 2
+                    done
+
+                    # Initiate the single-node replica set
+                    echo "Initiating the single-node replica set..."
+                    mongosh --host localhost --eval "
+                    rs.initiate({
+                      _id: 'rs0',
+                      members: [
+                        { _id: 0, host: 'mongo-headless:27017' }
+                      ]
+                    });
+                    "
+                    echo "Replica set initiated."
           resources: {{ toYaml .Values.resources | indent 12 }}
       nodeSelector: {{ toYaml .Values.nodeSelector | indent 8 }}
       tolerations: {{ toYaml .Values.tolerations | indent 8 }}

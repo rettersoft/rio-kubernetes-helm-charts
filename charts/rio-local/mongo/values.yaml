@@ -25,7 +25,7 @@ persistence:
   enabled: true
   accessMode: ReadWriteOnce
   size: 8Gi
-  storageClassName: "csi-disk"
+  storageClassName: ""
 
 resources: {}
 nodeSelector: {}
