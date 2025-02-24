@@ -20,6 +20,10 @@ spec:
       securityContext:
         runAsUser: 1000
         runAsGroup: 20
+      hostAliases:
+        - ip: "198.19.249.2" # node public ip here for local
+          hostnames:
+            - api.localhost
       initContainers:
         - name: kubeconfig-init
           image: busybox:latest

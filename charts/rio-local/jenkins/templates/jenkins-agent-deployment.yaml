@@ -19,6 +19,10 @@ spec:
         component: agent
     spec:
       serviceAccountName: jenkins-sa
+      hostAliases:
+        - ip: "198.19.249.2" # node public ip here for local
+          hostnames:
+            - api.localhost
       initContainers:
         - name: kubeconfig-init
           image: busybox:latest
