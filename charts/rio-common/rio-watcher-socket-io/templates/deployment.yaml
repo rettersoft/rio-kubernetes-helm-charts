@@ -50,13 +50,6 @@ spec:
           ports:
             - containerPort: {{ $.Values.service.targetPort }}
             - containerPort: {{ $.Values.service.debugPort }}
-          resources:
-            limits:
-              cpu: {{ $.Values.resources.limits.cpu }}
-              memory: {{ $.Values.resources.limits.memory }}
-            requests:
-              cpu: {{ $.Values.resources.requests.cpu }}
-              memory: {{ $.Values.resources.requests.memory }}
       volumes:
         - name: proc
           hostPath:

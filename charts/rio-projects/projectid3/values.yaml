@@ -21,7 +21,7 @@ resources:
     memory: 256Mi
   requests:
     cpu: 0.1
-    memory: 256Mi
+    memory: 100Mi
     
 autoscaling:
   enabled: true
@@ -103,7 +103,7 @@ rio-api:
       memory: 256Mi
     requests:
       cpu: 0.1
-      memory: 256Mi
+      memory: 100Mi
   command:
     - node
     - /opt/core-extension/dist/src/bin/api.js
@@ -130,7 +130,7 @@ rio-rdk:
       memory: 256Mi
     requests:
       cpu: 0.1
-      memory: 256Mi
+      memory: 100Mi
   autoscaling:
     enabled: true
     minReplicas: 1
