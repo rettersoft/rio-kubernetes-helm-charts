@@ -27,9 +27,9 @@ dependencies:
   - name: rio-rdk
     version: 0.1.0
     repository: file://../../rio-common/rio-rdk
-  - name: rio-watcher-socket-io
-    version: 0.1.0
-    repository: file://../../rio-common/rio-watcher-socket-io
-  - name: rio-watcher-client-server-socket-io
-    version: 0.1.0
-    repository: file://../../rio-common/rio-watcher-client-server-socket-io
+#  - name: rio-watcher-socket-io
+#    version: 0.1.0
+#    repository: file://../../rio-common/rio-watcher-socket-io
+#  - name: rio-watcher-client-server-socket-io
+#    version: 0.1.0
+#    repository: file://../../rio-common/rio-watcher-client-server-socket-io
