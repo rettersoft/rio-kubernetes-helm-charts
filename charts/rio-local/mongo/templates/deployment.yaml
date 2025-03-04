@@ -85,17 +85,25 @@ spec:
                   - |
                     # Wait for mongod to fully start
                     echo "Waiting for mongod to start..."
-                    until mongosh --host localhost --eval "print(\"Mongo is up\")" >/dev/null 2>&1; do
-                      sleep 2
+                    echo "Waiting for mongod to start..."
+                    until mongosh --host localhost \
+                    -u "$MONGO_INITDB_ROOT_USERNAME" \
+                    -p "$MONGO_INITDB_ROOT_PASSWORD" \
+                    --authenticationDatabase admin \
+                    --eval "print(\"Mongo is up\")" >/dev/null 2>&1; do
+                    sleep 2
                     done
 
                     # Initiate the single-node replica set
                     echo "Initiating the single-node replica set..."
-                    mongosh --host localhost --eval "
-                    rs.initiate({
+                    mongosh --host localhost \
+                      -u "$MONGO_INITDB_ROOT_USERNAME" \
+                      -p "$MONGO_INITDB_ROOT_PASSWORD" \
+                      --authenticationDatabase admin \
+                      --eval "rs.initiate({
                       _id: 'rs0',
                       members: [
-                        { _id: 0, host: 'mongo-headless:27017' }
+                        { _id: 0, host: 'mongo-0.mongo-headless.default.svc.cluster.local:27017' }
                       ]
                     });
                     "
