@@ -17,7 +17,7 @@ spec:
   triggers:
     - type: rabbitmq
       metadata:
-        queueName: {{ printf "%s_%s_0" $.Values.global.env.PROJECT_ID $queueName | quote }}_proxy
+        queueName: {{ printf "%s_%s_proxy" $.Values.global.env.PROJECT_ID $queueName | quote }}
         queueLength: "1"
         protocol: amqp
       authenticationRef:
