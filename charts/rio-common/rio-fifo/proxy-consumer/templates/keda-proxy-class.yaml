@@ -1,0 +1,25 @@
+{{- range $queueName, $queueConfig := .Values.global.queues }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queueName)) }}
+
+---
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
+  labels:
+    app: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
+spec:
+  scaleTargetRef:
+    name: {{ include "proxy-consumer.fullname" $ }}-class-{{ $modifiedQueueName }}
+  minReplicaCount: 0
+  maxReplicaCount: 1
+  pollingInterval: 7
+  triggers:
+    - type: rabbitmq
+      metadata:
+        queueName: {{ printf "%s_%s_0" $.Values.global.env.PROJECT_ID $queueName | quote }}_proxy
+        queueLength: "1"
+        protocol: amqp
+      authenticationRef:
+        name: rio-fifo-keda-auth
+{{- end }}
