@@ -1,8 +1,8 @@
 global:
-  queues:
+  queues: {}
 #    MainTests:
 #      partitions: 1
-  destinations:
+  destinations: {}
 #    state_stream_firestore:
 #      partitions: 1
   env:
