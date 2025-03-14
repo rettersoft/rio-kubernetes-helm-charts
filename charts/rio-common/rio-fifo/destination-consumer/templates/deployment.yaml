@@ -41,7 +41,7 @@ spec:
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queueName }}
+              value: state_stream{{ $queueName }}
             - name: RIO_QUEUE_CONSUMER_PARTITIONS
               value: {{ $partitionIndex | quote }}
             - name: RIO_QUEUE_PARTITIONS
