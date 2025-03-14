@@ -31,7 +31,7 @@ spec:
           command: ["node", "/opt/core-extension/dist/src/init/init-fifo.js"]
           env:
             - name: RIO_CLASS_QUEUE_NAME
-              value: {{ $queueName }}
+              value: state_stream_{{ $queueName }}
             - name: RIO_QUEUE_PARTITIONS
               value: {{ $queueConfig.partitions | quote }}
             {{- range $key, $value := $.Values.global.env }}
