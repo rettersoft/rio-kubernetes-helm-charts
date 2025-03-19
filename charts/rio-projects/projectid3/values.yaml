@@ -264,6 +264,10 @@ rio-watcher-socket-io:
     - node
     - /opt/core-extension/dist/src/bin/watcher-mongo-socket.js
 
+rio-scan-job-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
 
 rio-scheduler-dashboard:
   envFrom:
