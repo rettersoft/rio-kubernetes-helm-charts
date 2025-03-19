@@ -268,6 +268,10 @@ rio-scan-job-consumer:
   envFrom:
     - secretRef:
         name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: redis-secrets
 
 rio-scheduler-dashboard:
   envFrom:
