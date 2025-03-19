@@ -11,6 +11,7 @@ projects:
         - config-secret-root-api-key
         - config-storage
         - mongo-secrets
+        - rabbitmq-secrets
     jobs:
       init: root/init.Jenkinsfile
       rescue: root/rescue.Jenkinsfile
