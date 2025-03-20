@@ -272,6 +272,8 @@ rio-scan-job-consumer:
         name: mongo-secrets
     - secretRef:
         name: redis-secrets
+    - secretRef:
+        name: config-secret-root-api-key
 
 rio-scheduler-dashboard:
   envFrom:
