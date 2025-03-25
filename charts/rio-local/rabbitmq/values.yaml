@@ -6,9 +6,6 @@ rabbitmq:
   clustering:
     enabled: false
   global:
-    storageClass: "csi-disk"
-
-
-
-
-
+    storageClass: "cbs"
+  persistence:
+    size: 4Gi
