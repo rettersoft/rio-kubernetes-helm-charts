@@ -1,8 +1,8 @@
 replicaCount: 1
 
 image:
-  repository: my-jenkins
-  tag: "latest"
+  repository: docker-registry-cluster.default.svc.cluster.local/my-jenkins
+  tag: "16"
   pullPolicy: IfNotPresent
 
 agentImage:
