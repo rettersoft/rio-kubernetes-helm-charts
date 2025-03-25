@@ -17,11 +17,8 @@ dependencies:
 - name: rio-rdk
   repository: file://../../rio-common/rio-rdk
   version: 0.1.0
-- name: rio-watcher-socket-io
-  repository: file://../../rio-common/rio-watcher-socket-io
+- name: rio-scan-job-consumer
+  repository: file://../../rio-common/rio-scan-job-consumer
   version: 0.1.0
-- name: rio-watcher-client-server-socket-io
-  repository: file://../../rio-common/rio-watcher-client-server-socket-io
-  version: 0.1.0
-digest: sha256:afbcbeba0328f96d08aeabc67306a697fdadee8ac64d75c277de9176f6587778
-generated: "2025-02-19T12:58:07.349537+03:00"
+digest: sha256:54bbca27237ed681d8548324f00c74e08e4b2f75b7c16fc73be715cccc73f148
+generated: "2025-03-19T12:01:55.376268+03:00"
