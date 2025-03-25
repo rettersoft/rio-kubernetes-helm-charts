@@ -14,7 +14,7 @@ vault:
       enabled: true
       ingressClassName: nginx
       tls:
-        - secretName: my-tls-cert
+        - secretName: my-tls-cert #letsencrypt-vault
           hosts:
             - vault.localhost
       hosts:
