@@ -23,7 +23,7 @@ A Helm chart for managing loki
 | tenant.tenant.pools[0].storageClassName | string | `"csi-disk"` |  |
 | tenant.tenant.pools[0].volumeClaimTemplate.metadata.name | string | `"data"` |  |
 | tenant.tenant.pools[0].volumeClaimTemplate.spec.accessModes[0] | string | `"ReadWriteOnce"` |  |
-| tenant.tenant.pools[0].volumeClaimTemplate.spec.resources.requests.storage | string | `"10Gi"` |  |
+| tenant.tenant.pools[0].volumeClaimTemplate.spec.resources.requests.storage | string | `"5Gi"` |  |
 | tenant.tenant.pools[0].volumeClaimTemplate.spec.storageClassName | string | `"csi-disk"` |  |
 | tenant.tenant.pools[0].volumesPerServer | int | `2` |  |
 

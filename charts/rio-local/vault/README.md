@@ -18,6 +18,7 @@ A Helm chart for managing loki
 | vault.csi.enabled | bool | `false` |  |
 | vault.injector.enabled | bool | `false` |  |
 | vault.server.dataStorage.enabled | bool | `true` |  |
+| vault.server.dataStorage.storageClass | string | `"csi-disk"` |  |
 | vault.server.dev.enabled | bool | `false` |  |
 | vault.server.extraInitContainers[0].args[0] | string | `"set -eux\nARCH=$(uname -m)\ncase \"$ARCH\" in x86_64)\nJQ_URL=\"https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-amd64\"\n;;\narmv8*|aarch64*)\n# Adjust if your ARM binary has a different filename in the release\nJQ_URL=\"https://github.com/jqlang/jq/releases/download/jq-1.7.1/jq-linux-arm64\"\n;;\n*)\necho \"Unsupported architecture: $ARCH\"\nexit 1\n;;\nesac\n\nwget -O /vault/bin/jq \"$JQ_URL\"\nchmod +x /vault/bin/jq\n"` |  |
 | vault.server.extraInitContainers[0].command[0] | string | `"/bin/sh"` |  |

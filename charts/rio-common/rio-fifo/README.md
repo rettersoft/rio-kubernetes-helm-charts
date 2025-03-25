@@ -16,10 +16,7 @@ A Helm chart for the rio-fifo component
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.destinations[0].class | string | `"state_stream_firestore"` |  |
-| global.destinations[0].consumers[0] | string | `"0-1"` |  |
-| global.destinations[0].name | string | `"state_stream_firestore"` |  |
-| global.destinations[0].partitions | int | `1` |  |
+| global.destinations | object | `{}` |  |
 | global.env.MINIO_SECRET_KEY | string | `"XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q"` |  |
 | global.env.PROJECT_ID | string | `"${PROJECT_ID}"` |  |
 | global.env.RDK_URL | string | `"http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local"` |  |
@@ -35,14 +32,7 @@ A Helm chart for the rio-fifo component
 | global.image.repository | string | `"${REPOSITORY}"` |  |
 | global.image.tag | string | `"${IMAGE_TAG}"` |  |
 | global.podAnnotations | object | `{}` |  |
-| global.queues[0].class | string | `"MainTests"` |  |
-| global.queues[0].consumers[0] | string | `"0-1"` |  |
-| global.queues[0].name | string | `"MainTests"` |  |
-| global.queues[0].partitions | int | `1` |  |
-| global.queues[1].class | string | `"FifoTests"` |  |
-| global.queues[1].consumers[0] | string | `"0-1"` |  |
-| global.queues[1].name | string | `"FifoTests"` |  |
-| global.queues[1].partitions | int | `1` |  |
+| global.queues | object | `{}` |  |
 | destination-consumer.command[0] | string | `"node"` |  |
 | destination-consumer.command[1] | string | `"/opt/core-extension/dist/src/bin/fifo-destination-consumer.js"` |  |
 | proxy-consumer.proxyGroup | int | `2` |  |

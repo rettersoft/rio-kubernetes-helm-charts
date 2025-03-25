@@ -17,6 +17,8 @@ A Helm chart for managing redis
 | redis.architecture | string | `"standalone"` |  |
 | redis.auth.enabled | bool | `true` |  |
 | redis.auth.password | string | `"password"` |  |
+| redis.global | string | `nil` |  |
+| redis.master.persistence.size | string | `"4Gi"` |  |
 | redis.replica.enabled | bool | `false` |  |
 | redis.replica.replicaCount | int | `0` |  |
 | redis.replica.resources.limits.memory | string | `"512Mi"` |  |

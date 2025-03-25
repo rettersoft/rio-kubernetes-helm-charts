@@ -10,8 +10,8 @@ A Helm chart for MongoDB using the arm64v8/mongo image
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"arm64v8/mongo"` |  |
-| image.tag | float | `7` |  |
+| image.repository | string | `"mongo"` |  |
+| image.tag | int | `7` |  |
 | mongodb.database | string | `"mydatabase"` |  |
 | mongodb.password | string | `"password"` |  |
 | mongodb.username | string | `"admin"` |  |
@@ -19,6 +19,7 @@ A Helm chart for MongoDB using the arm64v8/mongo image
 | persistence.accessMode | string | `"ReadWriteOnce"` |  |
 | persistence.enabled | bool | `true` |  |
 | persistence.size | string | `"8Gi"` |  |
+| persistence.storageClassName | string | `""` |  |
 | replicaCount | int | `1` |  |
 | resources | object | `{}` |  |
 | service.port | int | `27017` |  |

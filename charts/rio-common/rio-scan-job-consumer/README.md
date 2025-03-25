@@ -1,4 +1,4 @@
-# console
+# rio-scan-job-consumer
 
 ![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: 1.0.0](https://img.shields.io/badge/AppVersion-1.0.0-informational?style=flat-square)
 
@@ -10,18 +10,14 @@ A simple Node.js TypeScript HTTP server
 |-----|------|---------|-------------|
 | affinity | object | `{}` |  |
 | autoscaling.enabled | bool | `true` |  |
-| autoscaling.maxReplicas | int | `5` |  |
+| autoscaling.maxReplicas | int | `10` |  |
 | autoscaling.minReplicas | int | `1` |  |
-| autoscaling.targetCPUUtilizationPercentage | int | `60` |  |
-| global.certificate.type | string | `"letsencrypt"` | What type of TLS certificate should be used?    Available options:    1) custom: A user-provided certificate.       - You must create your own secret, for example:         kubectl create secret tls my-cert-tls \           --cert /path/to/tls.crt \           --key /path/to/tls.key       - Reference that secret in your Helm chart as needed.    2) letsencrypt: Automatically request a certificate from Let's Encrypt.     Default is "custom". |
-| global.env.PROJECT_ID | string | `"console"` |  |
+| autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| command[0] | string | `"node"` |  |
+| command[1] | string | `"/opt/core-extension/dist/src/bin/scan-job.js"` |  |
 | image.pullPolicy | string | `"IfNotPresent"` |  |
-| image.repository | string | `"console"` |  |
+| image.repository | string | `"rio-base-image"` |  |
 | image.tag | int | `11` |  |
-| ingress.certificateSecret | string | `"my-cert-tls"` |  |
-| ingress.enabled | bool | `true` |  |
-| ingress.host | string | `"console.localhost"` |  |
-| ingress.path | string | `"/"` |  |
 | nodeSelector | object | `{}` |  |
 | replicaCount | int | `1` |  |
 | resources.limits.cpu | string | `"100m"` |  |

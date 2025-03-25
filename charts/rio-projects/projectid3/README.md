@@ -10,10 +10,10 @@ A Helm chart for the runtime component
 |------------|------|---------|
 | file://../../rio-common/rio-api | rio-api | 0.1.0 |
 | file://../../rio-common/rio-rdk | rio-rdk | 0.1.0 |
+| file://../../rio-common/rio-scan-job-consumer | rio-scan-job-consumer | 0.1.0 |
 | file://../../rio-common/rio-scheduler-api | rio-scheduler-api | 0.1.0 |
 | file://../../rio-common/rio-scheduler-async-consumer | rio-scheduler-async-consumer | 0.1.0 |
 | file://../../rio-common/rio-scheduler-cron-consumer | rio-scheduler-cron-consumer | 0.1.0 |
-| file://../../rio-common/rio-scheduler-dashboard | rio-scheduler-dashboard | 0.1.0 |
 | file://../../rio-common/rio-scheduler-task-consumer | rio-scheduler-task-consumer | 0.1.0 |
 
 ## Values
@@ -22,7 +22,7 @@ A Helm chart for the runtime component
 
 | Key | Type | Default | Description |
 |-----|------|---------|-------------|
-| global.certificate.type | string | `"custom"` | What type of TLS certificate should be used?    Available options:    1) custom: A user-provided certificate.       - You must create your own secret, for example:         kubectl create secret tls my-cert-tls \           --cert /path/to/tls.crt \           --key /path/to/tls.key       - Reference that secret in your Helm chart as needed.    2) letsencrypt: Automatically request a certificate from Let's Encrypt.     Default is "custom". |
+| global.certificate.type | string | `"letsencrypt"` | What type of TLS certificate should be used?    Available options:    1) custom: A user-provided certificate.       - You must create your own secret, for example:         kubectl create secret tls my-cert-tls \           --cert /path/to/tls.crt \           --key /path/to/tls.key       - Reference that secret in your Helm chart as needed.    2) letsencrypt: Automatically request a certificate from Let's Encrypt.     Default is "custom". |
 | global.env | object | `{"PROJECT_ID":"${PROJECT_ID}","RDK_URL":"http://${PROJECT_ID}-rio-rdk.default.svc.cluster.local","SCHEDULER_API_URL":"http://${PROJECT_ID}-rio-scheduler-api.default.svc.cluster.local","USER_CODE_URL":"http://${PROJECT_ID}-user-code.default.svc.cluster.local"}` | Environment variables that shared with all the pods |
 | global.image | object | `{"pullPolicy":"IfNotPresent","repository":"${REPOSITORY}","tag":"${IMAGE_TAG}"}` | Image of the RIO CORE |
 | global.objectStorage | object | `{"type":"MINIO"}` | Bucket storage |
@@ -49,7 +49,7 @@ A Helm chart for the runtime component
 | resources.limits.cpu | float | `0.5` |  |
 | resources.limits.memory | string | `"256Mi"` |  |
 | resources.requests.cpu | float | `0.1` |  |
-| resources.requests.memory | string | `"256i"` |  |
+| resources.requests.memory | string | `"100Mi"` |  |
 | rio-api.autoscaling.enabled | bool | `true` |  |
 | rio-api.autoscaling.maxReplicas | int | `10` |  |
 | rio-api.autoscaling.minReplicas | int | `1` |  |
@@ -68,7 +68,7 @@ A Helm chart for the runtime component
 | rio-api.resources.limits.cpu | float | `0.5` |  |
 | rio-api.resources.limits.memory | string | `"256Mi"` |  |
 | rio-api.resources.requests.cpu | float | `0.1` |  |
-| rio-api.resources.requests.memory | string | `"256i"` |  |
+| rio-api.resources.requests.memory | string | `"100Mi"` |  |
 | rio-rdk.autoscaling.enabled | bool | `true` |  |
 | rio-rdk.autoscaling.maxReplicas | int | `10` |  |
 | rio-rdk.autoscaling.minReplicas | int | `1` |  |
@@ -85,7 +85,11 @@ A Helm chart for the runtime component
 | rio-rdk.resources.limits.cpu | float | `0.5` |  |
 | rio-rdk.resources.limits.memory | string | `"256Mi"` |  |
 | rio-rdk.resources.requests.cpu | float | `0.1` |  |
-| rio-rdk.resources.requests.memory | string | `"256i"` |  |
+| rio-rdk.resources.requests.memory | string | `"100Mi"` |  |
+| rio-scan-job-consumer.envFrom[0].secretRef.name | string | `"rabbitmq-secrets"` |  |
+| rio-scan-job-consumer.envFrom[1].secretRef.name | string | `"mongo-secrets"` |  |
+| rio-scan-job-consumer.envFrom[2].secretRef.name | string | `"redis-secrets"` |  |
+| rio-scan-job-consumer.envFrom[3].secretRef.name | string | `"config-secret-root-api-key"` |  |
 | rio-scheduler-api.autoscaling.enabled | bool | `true` |  |
 | rio-scheduler-api.autoscaling.maxReplicas | int | `10` |  |
 | rio-scheduler-api.autoscaling.minReplicas | int | `1` |  |
@@ -142,6 +146,22 @@ A Helm chart for the runtime component
 | rio-scheduler-task-consumer.envFrom[3].secretRef.name | string | `"redis-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[4].secretRef.name | string | `"scheduler-redis-secrets"` |  |
 | rio-scheduler-task-consumer.envFrom[5].secretRef.name | string | `"config-storage"` |  |
+| rio-watcher-client-server-socket-io.autoscaling.maxReplicas | int | `1` |  |
+| rio-watcher-client-server-socket-io.autoscaling.minReplicas | int | `1` |  |
+| rio-watcher-client-server-socket-io.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| rio-watcher-client-server-socket-io.command[0] | string | `"node"` |  |
+| rio-watcher-client-server-socket-io.command[1] | string | `"/opt/core-extension/dist/src/bin/watcher-client-socket.js"` |  |
+| rio-watcher-client-server-socket-io.envFrom[0].secretRef.name | string | `"mongo-secrets"` |  |
+| rio-watcher-client-server-socket-io.envFrom[1].secretRef.name | string | `"redis-secrets"` |  |
+| rio-watcher-client-server-socket-io.envFrom[2].secretRef.name | string | `"config-storage"` |  |
+| rio-watcher-socket-io.autoscaling.maxReplicas | int | `1` |  |
+| rio-watcher-socket-io.autoscaling.minReplicas | int | `1` |  |
+| rio-watcher-socket-io.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| rio-watcher-socket-io.command[0] | string | `"node"` |  |
+| rio-watcher-socket-io.command[1] | string | `"/opt/core-extension/dist/src/bin/watcher-mongo-socket.js"` |  |
+| rio-watcher-socket-io.envFrom[0].secretRef.name | string | `"mongo-secrets"` |  |
+| rio-watcher-socket-io.envFrom[1].secretRef.name | string | `"redis-secrets"` |  |
+| rio-watcher-socket-io.envFrom[2].secretRef.name | string | `"config-storage"` |  |
 | service.debugPort | int | `9229` |  |
 | service.port | int | `80` |  |
 | service.targetPort | int | `80` |  |
@@ -200,6 +220,31 @@ A Helm chart for the runtime component
 | rio-rdk.service.targetPort | int | `80` |  |
 | rio-rdk.service.type | string | `"ClusterIP"` |  |
 | rio-rdk.tolerations | list | `[]` |  |
+### Sub-chart: rio-scan-job-consumer Values
+
+| Key | Type | Default | Description |
+|-----|------|---------|-------------|
+| rio-scan-job-consumer.affinity | object | `{}` |  |
+| rio-scan-job-consumer.autoscaling.enabled | bool | `true` |  |
+| rio-scan-job-consumer.autoscaling.maxReplicas | int | `10` |  |
+| rio-scan-job-consumer.autoscaling.minReplicas | int | `1` |  |
+| rio-scan-job-consumer.autoscaling.targetCPUUtilizationPercentage | int | `80` |  |
+| rio-scan-job-consumer.command[0] | string | `"node"` |  |
+| rio-scan-job-consumer.command[1] | string | `"/opt/core-extension/dist/src/bin/scan-job.js"` |  |
+| rio-scan-job-consumer.image.pullPolicy | string | `"IfNotPresent"` |  |
+| rio-scan-job-consumer.image.repository | string | `"rio-base-image"` |  |
+| rio-scan-job-consumer.image.tag | int | `11` |  |
+| rio-scan-job-consumer.nodeSelector | object | `{}` |  |
+| rio-scan-job-consumer.replicaCount | int | `1` |  |
+| rio-scan-job-consumer.resources.limits.cpu | string | `"100m"` |  |
+| rio-scan-job-consumer.resources.limits.memory | string | `"128Mi"` |  |
+| rio-scan-job-consumer.resources.requests.cpu | string | `"100m"` |  |
+| rio-scan-job-consumer.resources.requests.memory | string | `"128Mi"` |  |
+| rio-scan-job-consumer.service.debugPort | int | `9229` |  |
+| rio-scan-job-consumer.service.port | int | `80` |  |
+| rio-scan-job-consumer.service.targetPort | int | `80` |  |
+| rio-scan-job-consumer.service.type | string | `"ClusterIP"` |  |
+| rio-scan-job-consumer.tolerations | list | `[]` |  |
 ### Sub-chart: rio-scheduler-api Values
 
 | Key | Type | Default | Description |
@@ -275,30 +320,6 @@ A Helm chart for the runtime component
 | rio-scheduler-cron-consumer.service.targetPort | int | `80` |  |
 | rio-scheduler-cron-consumer.service.type | string | `"ClusterIP"` |  |
 | rio-scheduler-cron-consumer.tolerations | list | `[]` |  |
-### Sub-chart: rio-scheduler-dashboard Values
-
-| Key | Type | Default | Description |
-|-----|------|---------|-------------|
-| rio-scheduler-dashboard.affinity | object | `{}` |  |
-| rio-scheduler-dashboard.env.redisHost | string | `"scheduler-redis-master.default.svc.cluster.local"` |  |
-| rio-scheduler-dashboard.env.redisPassword | string | `"password"` |  |
-| rio-scheduler-dashboard.env.redisPort | int | `6379` |  |
-| rio-scheduler-dashboard.image.pullPolicy | string | `"IfNotPresent"` |  |
-| rio-scheduler-dashboard.image.repository | string | `"bulldashboard"` |  |
-| rio-scheduler-dashboard.image.tag | int | `3` |  |
-| rio-scheduler-dashboard.nodeSelector | object | `{}` |  |
-| rio-scheduler-dashboard.queues[0] | string | `"projectid3_task"` |  |
-| rio-scheduler-dashboard.queues[1] | string | `"projectid3_cron"` |  |
-| rio-scheduler-dashboard.replicaCount | int | `1` |  |
-| rio-scheduler-dashboard.resources.limits.cpu | string | `"100m"` |  |
-| rio-scheduler-dashboard.resources.limits.memory | string | `"128Mi"` |  |
-| rio-scheduler-dashboard.resources.requests.cpu | string | `"100m"` |  |
-| rio-scheduler-dashboard.resources.requests.memory | string | `"128Mi"` |  |
-| rio-scheduler-dashboard.service.debugPort | int | `9229` |  |
-| rio-scheduler-dashboard.service.port | int | `80` |  |
-| rio-scheduler-dashboard.service.targetPort | int | `80` |  |
-| rio-scheduler-dashboard.service.type | string | `"ClusterIP"` |  |
-| rio-scheduler-dashboard.tolerations | list | `[]` |  |
 ### Sub-chart: rio-scheduler-task-consumer Values
 
 | Key | Type | Default | Description |
