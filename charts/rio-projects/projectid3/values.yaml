@@ -35,6 +35,8 @@ tolerations: []
 
 affinity: {}
 global:
+  podExtraLabels:
+    rio: "true"
   podAnnotations:
     rio: "true"
   # -- Environment variables that shared with all the pods

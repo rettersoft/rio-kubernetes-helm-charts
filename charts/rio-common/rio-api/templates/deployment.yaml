@@ -13,6 +13,9 @@ spec:
     metadata:
       labels:
         app: {{ include "rio-api.fullname" . }}
+        {{- with .Values.global.podExtraLabel }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
       annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst
