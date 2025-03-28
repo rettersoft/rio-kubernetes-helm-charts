@@ -10,7 +10,7 @@ metadata:
   labels:
     app: {{ include "rio-watcher-socket-io.fullname" $ }}-{{ $modifiedQueueName }}
     {{- with .Values.global.podExtraLabels }}
-    {{ toYaml . | nindent 8 }}
+    {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
   replicas: 1

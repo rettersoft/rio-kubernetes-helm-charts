@@ -5,7 +5,7 @@ metadata:
   labels:
     app: {{ include "rio-api.fullname" . }}
     {{- with .Values.global.podExtraLabels }}
-    {{ toYaml . | nindent 8 }}
+    {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
