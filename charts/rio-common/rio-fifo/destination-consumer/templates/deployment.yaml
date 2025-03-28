@@ -11,7 +11,7 @@ metadata:
   name: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
   labels:
     app: {{ include "destination-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
-    {{- with .Values.global.podExtraLabels }}
+    {{- with $.Values.global.podExtraLabels }}
     {{ toYaml . | nindent 4 }}
     {{- end }}
 spec:
