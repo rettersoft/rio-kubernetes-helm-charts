@@ -4,6 +4,9 @@ metadata:
   name: {{ include "rio-scheduler-task-consumer.fullname" . }}
   labels:
     app: {{ include "rio-scheduler-task-consumer.fullname" . }}
+    {{- with .Values.global.podExtraLabels }}
+    {{ toYaml . | nindent 8 }}
+    {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -13,6 +16,9 @@ spec:
     metadata:
       labels:
         app: {{ include "rio-scheduler-task-consumer.fullname" . }}
+        {{- with .Values.global.podExtraLabels }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
       annotations: {{- toYaml .Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst

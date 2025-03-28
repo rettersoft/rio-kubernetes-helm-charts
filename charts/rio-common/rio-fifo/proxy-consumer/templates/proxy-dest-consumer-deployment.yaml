@@ -9,6 +9,9 @@ metadata:
   name: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
   labels:
     app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
+    {{- with $.Values.global.podExtraLabels }}
+    {{ toYaml . | nindent 8 }}
+    {{- end }}
 spec:
   replicas: 1
   selector:
@@ -18,6 +21,9 @@ spec:
     metadata:
       labels:
         app: {{ include "proxy-consumer.fullname" $ }}-dest-{{ $modifiedQueueName }}
+        {{- with $.Values.global.podExtraLabels }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
       annotations: {{- toYaml $.Values.global.podAnnotations | nindent 8 }}
     spec:
       dnsPolicy: ClusterFirst

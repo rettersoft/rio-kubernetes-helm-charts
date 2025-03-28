@@ -5,6 +5,9 @@ metadata:
   name: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
   labels:
     app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
+    {{- with .Values.global.podExtraLabels }}
+    {{ toYaml . | nindent 8 }}
+    {{- end }}
 spec:
   replicas: 1
   selector:
@@ -14,6 +17,9 @@ spec:
     metadata:
       labels:
         app: {{ include "rio-watcher-client-server-socket-io.fullname" . }}
+        {{- with .Values.global.podExtraLabels }}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
 
     spec:
       dnsPolicy: ClusterFirst
