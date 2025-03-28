@@ -24,7 +24,10 @@ global:
         name: scheduler-redis-secrets
     - secretRef:
         name: config-storage
-  podAnnotations: { }
+  podAnnotations:
+    rio: "true"
+  podExtraLabels:
+    rio: "true"
   image:
     repository: ${REPOSITORY}
     tag: ${IMAGE_TAG}
