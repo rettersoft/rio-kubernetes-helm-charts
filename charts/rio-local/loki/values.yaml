@@ -1,22 +1,29 @@
-global:
 
-loki-stack:
+loki:
+  monitoring:
+    selfMonitoring:
+      enabled: false
+  test:
+    enabled: false
   loki:
-    resources:
-      limits:
-        cpu: 200m
-        memory: 384Mi
-      requests:
-        cpu: 200m
-        memory: 384Mi
-  promtail:
-    serviceAccount:
-      create: true
-      name: loki-promtail
-    config:
-      snippets:
-        extraRelabelConfigs:
-          - action: replace
-            source_labels:
-              - __meta_kubernetes_pod_container_image
-            target_label: image
+    querier:
+      # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
+      max_concurrent: 4
+    pattern_ingester:
+      enabled: true
+
+  deploymentMode: SimpleScalable
+
+  backend:
+#    affinity: {}
+    replicas: 1
+  read:
+#    affinity: {}
+    replicas: 1
+  write:
+#    affinity: {}
+    replicas: 1 # To ensure data durability with replication
+#
+#  gateway:
+#    service:
+#      type: LoadBalancer

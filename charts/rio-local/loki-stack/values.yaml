@@ -1,0 +1,40 @@
+global:
+
+loki-stack:
+  loki:
+    resources:
+#      limits:
+#        cpu: 200m
+#        memory: 384Mi
+      requests:
+        cpu: 200m
+        memory: 384Mi
+  promtail:
+    enabled: false
+    serviceAccount:
+      create: true
+      name: loki-promtail
+    config:
+      snippets:
+        pipelineStages:
+          - cri: { }
+          - match:
+              #TODO for better performance we need to annotiate pods of rio and only query rio pods
+              #TODO Prefix search may give us better performance
+              #{app="j8dugsbie-rio-api"} |~ `.*\[user-code-log\]*.`
+              #{app="j8dugsbie-rio-api"} |~ ".*\\[user-code-log\\]*."
+              selector: '{app!=""} |~ ".*user-code-log.*"'  # Match all logs with app label (all Kubernetes pods)
+              stages:
+                - static_labels:
+                    log_group: user-code
+#                - replace:
+#                    source: log
+#                    expression: '.*\[user-code-log\]\s+'
+#                    replace: 'asd'
+
+        extraRelabelConfigs:
+          - action: replace
+            source_labels:
+              - __meta_kubernetes_pod_container_image
+            target_label: image
+

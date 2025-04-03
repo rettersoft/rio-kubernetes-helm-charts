@@ -7,15 +7,24 @@ repositories:
     url: https://charts.bitnami.com/bitnami
   - name: ingress-nginx
     url: https://kubernetes.github.io/ingress-nginx
+  - name: jetstack
+    url: https://charts.jetstack.io
 
 releases:
-#  - name: loki
-#    namespace: monitoring
-#    chart: ./loki
-#    values:
-#      -  ./loki/values.yaml
-#      - ./storage-class-overrides.yaml
-#
+  - name: loki-stack
+    namespace: monitoring
+    chart: ./loki-stack
+    values:
+      -  ./loki-stack/values.yaml
+      - ./storage-class-overrides.yaml
+
+  - name: loki
+    namespace: monitoring
+    chart: ./loki
+    values:
+      -  ./loki/values.yaml
+      - ./storage-class-overrides.yaml
+
 #  - name: prometheus
 #    namespace: monitoring
 #    chart: ./prometheus
@@ -23,50 +32,50 @@ releases:
 #      -  ./prometheus/values.yaml
 #      - ./storage-class-overrides.yaml
 #
-#  - name: grafana
-#    namespace: monitoring
-#    chart: ./grafana
-#    values:
-#      -  ./grafana/values.yaml
-#      - ./storage-class-overrides.yaml
+  - name: grafana
+    namespace: monitoring
+    chart: ./grafana
+    values:
+      -  ./grafana/values.yaml
+      - ./storage-class-overrides.yaml
 
   - name: redis
     chart: ./redis
     values:
       - ./redis/values.yaml
       - ./storage-class-overrides.yaml
-
+#
   - name: rabbitmq
     chart: ./rabbitmq
     values:
       - ./rabbitmq/values.yaml
       - ./storage-class-overrides.yaml
-
+#
   - name: scheduler-redis
     chart: ./scheduler-redis
     values:
       - ./scheduler-redis/values.yaml
       - ./storage-class-overrides.yaml
 
-  - name: mongo
-    chart: ./mongo
-    values:
-      - ./mongo/values.yaml
-      - ./storage-class-overrides.yaml
+#  - name: mongo
+#    chart: ./mongo
+#    values:
+#      - ./mongo/values.yaml
+#      - ./storage-class-overrides.yaml
 
-  - name: ingress-nginx
-    chart: ingress-nginx/ingress-nginx
+#  - name: ingress-nginx
+#    chart: ingress-nginx/ingress-nginx
 
-  - name: minio-operator
-    namespace: minio
-    chart: ./minio-operator
-
-  - name: minio-tenant
-    namespace: minio
-    chart: ./minio-tenant
-    values:
-      - ./minio-tenant/values.yaml
-      - ./storage-class-overrides.yaml
+#  - name: minio-operator
+#    namespace: minio
+#    chart: ./minio-operator
+#
+#  - name: minio-tenant
+#    namespace: minio
+#    chart: ./minio-tenant
+#    values:
+#      - ./minio-tenant/values.yaml
+#      - ./storage-class-overrides.yaml
 
   - name: external-secrets
     namespace: default
@@ -83,3 +92,7 @@ releases:
 #    namespace: default
 #    chart: ./jenkins
 
+# todo add keda
+#         helm repo add kedacore https://kedacore.github.io/charts                                                                                                 298ms  18:13:33
+#         helm repo update
+#         helm install keda kedacore/keda

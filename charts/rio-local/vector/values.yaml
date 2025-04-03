@@ -1,0 +1,89 @@
+vector:
+  role: Agent
+  haproxy:
+    enabled: false # try this
+
+  customConfig:
+    data_dir: /vector-data-dir
+    api:
+     enabled: true
+     address: 127.0.0.1:8686
+     playground: false
+
+    sources:
+      k8s_logs:
+        type: kubernetes_logs
+        extra_label_selector: "rio=true"
+
+    transforms:
+      user_code_log:
+        type: remap
+        inputs: [ "k8s_logs" ]
+        source: |
+          # Keep the whole event as-is
+          . = .
+          # Default assignment
+          .log_group = "any"
+          
+          if exists(.message) && is_string(.message) && contains( string!(.message), "[user-code-log]") {
+           .log_group = "user-code";
+
+            # Attempt to remove the prefix; fall back to the original message if an error occurs
+            cleaned, err = replace(.message, "[user-code-log] ", "");
+            if err != null {
+              cleaned = .message;
+            }
+          
+            # Parse JSON from the cleaned string; if parsing fails, default to an empty object
+            .user_data, err2 = parse_json(cleaned);
+            if err2 != null {
+              .user_data = {};
+            }
+          
+            # put user_data.metadata to the metadata 
+            # override the message with fields 
+            .message = encode_json(.user_data.fields)
+           }
+          .log_group = .log_group;
+          
+
+    sinks:
+      loki:
+        type: "loki"
+        inputs: ["user_code_log"]
+        #endpoint: "http://loki-write.monitoring.svc.cluster.local:3100/loki/api/v1/push"
+        endpoint: "http://loki.monitoring:3100"
+        remove_structured_metadata_fields: true
+        remove_label_fields: true
+        structured_metadata:
+          userdata: '{{`{{ user_data }}`}}'
+          log_group: '{{`{{ log_group }}`}}'
+        labels:
+          job: "vector"
+          namespace: '{{`{{ kubernetes.pod_namespace }}`}}'
+          pod: '{{`{{ kubernetes.pod_name }}`}}'
+          container_name: '{{`{{ kubernetes.container_name }}`}}'
+          node_name: '{{`{{ kubernetes.pod_node_name }}`}}'
+          app: '{{`{{ kubernetes.pod_labels.app }}`}}'
+          log_group: '{{`{{ log_group }}`}}'
+          c: '{{`{{ user_data.metadata.c }}`}}'
+          d: '{{`{{ user_data.metadata.d }}`}}'
+          i: '{{`{{ user_data.metadata.i }}`}}'
+          l: '{{`{{ user_data.metadata.l }}`}}'
+          m: '{{`{{ user_data.metadata.m }}`}}'
+          q: '{{`{{ user_data.metadata.q }}`}}'
+          r: '{{`{{ user_data.metadata.r }}`}}'
+          s: '{{`{{ user_data.metadata.s }}`}}'
+          t: '{{`{{ user_data.metadata.t }}`}}'
+          u: '{{`{{ user_data.metadata.u }}`}}'
+        encoding:
+          codec: "json"
+
+  service:
+    ports:
+      - name: api
+        port: 8686
+        targetPort: 8686
+
+  serviceAccount:
+    name: loki-promtail
