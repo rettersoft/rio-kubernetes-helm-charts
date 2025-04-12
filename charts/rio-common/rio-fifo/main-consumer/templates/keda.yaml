@@ -1,17 +1,17 @@
-{{- range $index, $queue := .Values.global.queues }}
-{{- range $consumerIndex, $consumer := $queue.consumers }}
-{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queue.name)) }}
+{{- range $queueName, $queueConfig := .Values.global.queues }}
+{{- range $partitionIndex, $_ := until (int $queueConfig.partitions) }}
+{{- $modifiedQueueName := regexReplaceAll "[^a-z0-9]+" "-" (lower (substr 0 20 $queueName)) }}
 
 ---
 apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
-  name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+  name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
   labels:
-    app: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+    name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
 spec:
   scaleTargetRef:
-    name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $consumerIndex }}
+    name: {{ include "main-consumer.fullname" $ }}-{{ $modifiedQueueName }}-{{ $partitionIndex }}
   minReplicaCount: 0
   maxReplicaCount: 1
   pollingInterval: 7
