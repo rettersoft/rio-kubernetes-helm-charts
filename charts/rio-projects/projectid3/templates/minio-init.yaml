@@ -40,5 +40,5 @@ spec:
               # Warning
               echo "this user has access to every bucket ! be careful with that it was development purposes only and for the sake of simplicity"
       restartPolicy: Never
-  backoffLimit: 4
+  backoffLimit: 2
 {{- end }}
