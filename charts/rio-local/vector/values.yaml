@@ -16,48 +16,137 @@ vector:
         extra_label_selector: "rio=true"
 
     transforms:
-      user_code_log:
-        type: remap
+      # The router transform directs events to different routes based on the presence
+      # of a specific prefix in the message.
+      user_code_router:
+        type: route
         inputs: [ "k8s_logs" ]
+        route:
+          metadata: 'contains(string!(.message), "[user-code-log-metadata]")'
+          payload: 'contains(string!(.message), "[user-code-log-payload]")'
+          user_logs: 'contains(string!(.message), "[user-code-log-user-logs]")'
+          rdk_operation: 'contains(string!(.message), "[user-code-log-rdk-operation]")'
+        reroute_unmatched: true
+
+
+      # Process events routed as metadata.
+      user_code_metadata:
+        type: remap
+        inputs: [ "user_code_router.metadata" ]
+        source: |
+          # do i really need this ?
+          # Keep the whole event as-is
+          . = .
+          
+          .log_group = "user-code"
+          .log_type = "metadata"
+          # Remove the metadata prefix
+          metadata_cleaned = replace!(.message, "[user-code-log-metadata] ", "")
+          .message = metadata_cleaned
+          
+          # Parse the cleaned string as JSON, defaulting to an empty object if parsing fails.
+          metadata_obj, err2 = parse_json(metadata_cleaned)
+          if err2 != null {
+            metadata_obj = {}
+          }
+          # Store parsed data under user_data.metadata.
+          .metadata = metadata_obj
+          # Optionally, clear the message.
+
+      # Process events routed as payload.
+      user_code_payload:
+        type: remap
+        inputs: [ "user_code_router.payload" ]
         source: |
           # Keep the whole event as-is
           . = .
-          # Default assignment
-          .log_group = "any"
           
-          if exists(.message) && is_string(.message) && contains( string!(.message), "[user-code-log]") {
-           .log_group = "user-code";
+          .log_group = "user-code"
+          .log_type = "payload"
+          
+          # Split by commas and extract parts - faster than regex for simple patterns  
+          parts = split(string!(.message), " ", limit: 3)
+          
+          # Clean up the ULID part (second element)  
+          # Extract just the ULID characters using more efficient string operations  
+          .metadata.traceId = slice!(parts[1], 1, -1)
+          
+          
+          # Get the data part (third element)  
+          .message = parts[2]
+          
 
-            # Attempt to remove the prefix; fall back to the original message if an error occurs
-            cleaned, err = replace(.message, "[user-code-log] ", "");
-            if err != null {
-              cleaned = .message;
-            }
+      # Process .
+      user_code_logs:
+        type: remap
+        inputs: [ "user_code_router.user_logs" ]
+        source: |
+          # do i really need this ?
+          # Preserve the original event and enrich it
+          . = .
+          .log_group = "user-code"
+          .log_type = "user-logs"
           
-            # Parse JSON from the cleaned string; if parsing fails, default to an empty object
-            .user_data, err2 = parse_json(cleaned);
-            if err2 != null {
-              .user_data = {};
-            }
+          # SAMPLE LOG ! 
+          # [user-code-log-user-logs] [01JRJQGE2S07RKYRVRGSB3B1K5] [index.getDashboard] HELLO FOR LOG !
+
+          # Split by commas and extract parts - faster than regex for simple patterns  
+          parts = split(string!(.message), " ", limit: 4)
           
-            # put user_data.metadata to the metadata 
-            # override the message with fields 
-            .message = encode_json(.user_data.fields)
-           }
-          .log_group = .log_group;
+          # Clean up the ULID part (second element)  
+          # Extract just the ULID characters using more efficient string operations  
+          .metadata.traceId = slice!(parts[1], 1, -1)
+          .metadata.handler = slice!(parts[2], 1, -1)
           
+          # Get the data part (last element)  
+          .message = parts[3]
+          
+          
+
+      # Process events routed as payload.
+      rdk_operation:
+        type: remap
+        inputs: [ "user_code_router.rdk_operation" ]
+        source: |
+          # Keep the whole event as-is
+          . = .
+          
+          .log_group = "user-code"
+          .log_type = "rdk"
+          
+          # Split by commas and extract parts - faster than regex for simple patterns  
+          parts = split(string!(.message), " ", limit: 3)
+          
+          # Clean up the ULID part (second element)  
+          # Extract just the ULID characters using more efficient string operations  
+          .metadata.traceId = slice!(parts[1], 1, -1)
+          
+          
+          # Get the data part (third element)  
+          .message = parts[2]
+      
+
+      # Optionally, handle logs that do not match either prefix.
+      user_code_default:
+        type: remap
+        inputs: [ "user_code_router._unmatched" ]
+        source: |
+          .log_group = "default"
 
     sinks:
       loki:
         type: "loki"
-        inputs: ["user_code_log"]
+        inputs: [ "user_code_metadata", "user_code_payload", "user_code_default", "user_code_logs", "rdk_operation" ]
         #endpoint: "http://loki-write.monitoring.svc.cluster.local:3100/loki/api/v1/push"
         endpoint: "http://loki.monitoring:3100"
         remove_structured_metadata_fields: true
         remove_label_fields: true
         structured_metadata:
-          userdata: '{{`{{ user_data }}`}}'
+          metadata: '{{`{{ metadata }}`}}'
           log_group: '{{`{{ log_group }}`}}'
+          log_type: '{{`{{ log_type }}`}}'
+          # TODO buraya zamanında {{kubernetes}} eklediğimde  field.kubernetes'in hepsi label'a geçti
+          # TODO metadatada için aynısını yaparsak aşağıdakilere gerek kalmaz ? dene !!!!
         labels:
           job: "vector"
           namespace: '{{`{{ kubernetes.pod_namespace }}`}}'
@@ -66,16 +155,19 @@ vector:
           node_name: '{{`{{ kubernetes.pod_node_name }}`}}'
           app: '{{`{{ kubernetes.pod_labels.app }}`}}'
           log_group: '{{`{{ log_group }}`}}'
-          projectId: '{{`{{ user_data.metadata.projectId }}`}}'
-          classId: '{{`{{ user_data.metadata.classId }}`}}'
-          instanceId: '{{`{{ user_data.metadata.instanceId }}`}}'
-          methodName: '{{`{{ user_data.metadata.methodName }}`}}'
-          userId: '{{`{{ user_data.metadata.userId }}`}}'
-          identity: '{{`{{ user_data.metadata.identity }}`}}'
-          requestId: '{{`{{ user_data.metadata.requestId }}`}}'
-          requestTime: '{{`{{ user_data.metadata.requestTime }}`}}'
-          responseTime: '{{`{{ user_data.metadata.responseTime }}`}}'
-          statusCode: '{{`{{ user_data.metadata.statusCode }}`}}'
+          log_type: '{{`{{ log_type }}`}}'
+          projectId: '{{`{{ metadata.projectId }}`}}'
+          classId: '{{`{{ metadata.classId }}`}}'
+          instanceId: '{{`{{ metadata.instanceId }}`}}'
+          methodName: '{{`{{ metadata.methodName }}`}}'
+          userId: '{{`{{ metadata.userId }}`}}'
+          identity: '{{`{{ metadata.identity }}`}}'
+          requestId: '{{`{{ metadata.requestId }}`}}'
+          traceId: '{{`{{ metadata.traceId }}`}}'
+          requestTime: '{{`{{ metadata.requestTime }}`}}'
+          responseTime: '{{`{{ metadata.responseTime }}`}}'
+          statusCode: '{{`{{ metadata.statusCode }}`}}'
+          handler: '{{`{{ metadata.handler }}`}}'
         encoding:
           codec: "json"
 
