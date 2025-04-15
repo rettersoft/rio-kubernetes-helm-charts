@@ -37,6 +37,6 @@ vault:
         OBJECT_STORAGE_SECRET_KEY: 'XEZrQDtB6NfYuaEamniUj8aOhT25C6nGWNCqBB6q'
     - path: "JENKINS"
       data:
-        JENKINS_HOST: 'jenkins.localhost'
+        JENKINS_HOST: 'http://jenkins.default.svc.cluster.local:8080'
         JENKINS_REMOTE_TRIGGER_TOKEN: 'api-user'
         JENKINS_REMOTE_USER: 'api-user'
