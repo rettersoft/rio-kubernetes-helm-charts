@@ -25,7 +25,7 @@ vector:
           metadata: 'contains(string!(.message), "[user-code-log-metadata]")'
           payload: 'contains(string!(.message), "[user-code-log-payload]")'
           user_logs: 'contains(string!(.message), "[user-code-log-user-logs]")'
-          rdk_operation: 'contains(string!(.message), "[user-code-log-rdk-operation]")'
+          rdk: 'contains(string!(.message), "[user-code-log-rdk]")'
         reroute_unmatched: true
 
 
@@ -104,9 +104,9 @@ vector:
           
 
       # Process events routed as payload.
-      rdk_operation:
+      rdk:
         type: remap
-        inputs: [ "user_code_router.rdk_operation" ]
+        inputs: [ "user_code_router.rdk" ]
         source: |
           # Keep the whole event as-is
           . = .
@@ -136,7 +136,7 @@ vector:
     sinks:
       loki:
         type: "loki"
-        inputs: [ "user_code_metadata", "user_code_payload", "user_code_default", "user_code_logs", "rdk_operation" ]
+        inputs: [ "user_code_metadata", "user_code_payload", "user_code_default", "user_code_logs", "rdk" ]
         #endpoint: "http://loki-write.monitoring.svc.cluster.local:3100/loki/api/v1/push"
         endpoint: "http://loki.monitoring:3100"
         remove_structured_metadata_fields: true
