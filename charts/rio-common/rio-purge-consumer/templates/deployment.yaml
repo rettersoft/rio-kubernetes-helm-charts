@@ -54,7 +54,7 @@ spec:
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
             - name: RIO_TASK_QUEUE_NAME
-              value: scan_job_queue
+              value: purge_queue
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
             {{- range $key, $value := .Values.global.env }}
