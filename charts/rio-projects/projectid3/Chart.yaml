@@ -30,6 +30,9 @@ dependencies:
   - name: rio-scan-job-consumer
     version: 0.1.0
     repository: file://../../rio-common/rio-scan-job-consumer
+  - name: rio-purge-consumer
+    version: 0.1.0
+    repository: file://../../rio-common/rio-scan-job-consumer
 #  - name: rio-watcher-socket-io
 #    version: 0.1.0
 #    repository: file://../../rio-common/rio-watcher-socket-io

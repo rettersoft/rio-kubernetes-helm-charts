@@ -278,6 +278,17 @@ rio-scan-job-consumer:
     - secretRef:
         name: config-secret-root-api-key
 
+rio-purge-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: config-secret-root-api-key
+
 rio-scheduler-dashboard:
   envFrom:
     - secretRef:
