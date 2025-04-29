@@ -29,7 +29,7 @@ spec:
       initContainers:
         - name: queue-init
           image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
-          command: ["node", "/opt/core-extension/dist/src/init/init-scan-job.js"]
+          command: ["node", "/opt/core-extension/dist/src/init/init-purge.js"]
           env:
             {{- range $key, $value := .Values.global.env }}
             - name: {{ $key }}
