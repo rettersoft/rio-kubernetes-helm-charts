@@ -29,7 +29,7 @@ spec:
       initContainers:
         - name: queue-init
           image: "{{ .Values.global.image.repository }}:{{ .Values.global.image.tag }}"
-          command: ["node", "/opt/core-extension/dist/src/init/init-purge.js"]
+          command: ["node", "/opt/core-extension/dist/src/init/init-wait-fifo.js"]
           env:
             {{- range $key, $value := .Values.global.env }}
             - name: {{ $key }}
@@ -54,7 +54,7 @@ spec:
             - name: RELEASE_NAME
               value: {{ .Release.Name }}
             - name: RIO_TASK_QUEUE_NAME
-              value: purge_queue
+              value: wait_fifo_queue
             - name: REDIS_CONFIG
               value: '{"host":"redis-master.default.svc.cluster.local","port":6379}'
             {{- range $key, $value := .Values.global.env }}
