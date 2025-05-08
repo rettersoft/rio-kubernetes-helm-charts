@@ -33,6 +33,9 @@ dependencies:
   - name: rio-purge-consumer
     version: 0.1.0
     repository: file://../../rio-common/rio-purge-consumer
+  - name: rio-wait-fifo-consumer
+    version: 0.1.0
+    repository: file://../../rio-common/rio-wait-fifo-consumer
 #  - name: rio-watcher-socket-io
 #    version: 0.1.0
 #    repository: file://../../rio-common/rio-watcher-socket-io

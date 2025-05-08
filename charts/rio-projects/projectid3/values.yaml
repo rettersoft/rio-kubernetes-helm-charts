@@ -289,6 +289,18 @@ rio-purge-consumer:
     - secretRef:
         name: config-secret-root-api-key
 
+
+rio-wait-fifo-consumer:
+  envFrom:
+    - secretRef:
+        name: rabbitmq-secrets
+    - secretRef:
+        name: mongo-secrets
+    - secretRef:
+        name: redis-secrets
+    - secretRef:
+        name: config-secret-root-api-key
+
 rio-scheduler-dashboard:
   envFrom:
     - secretRef:
