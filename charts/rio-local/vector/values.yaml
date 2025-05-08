@@ -64,16 +64,17 @@ vector:
           .log_group = "user-code"
           .log_type = "payload"
           
-          # Split by commas and extract parts - faster than regex for simple patterns  
-          parts = split(string!(.message), " ", limit: 3)
+          # Split by commas and extract parts - faster than regex for simple patterns
+          parts = split(string!(.message), " ", limit: 5)
           
           # Clean up the ULID part (second element)  
-          # Extract just the ULID characters using more efficient string operations  
+          # Extract just the ULID characters using more efficient string operations
           .metadata.traceId = slice!(parts[1], 1, -1)
+          .metadata.spanId = slice!(parts[2], 1, -1)
+          .metadata.requestId = slice!(parts[3], 1, -1)
           
-          
-          # Get the data part (third element)  
-          .message = parts[2]
+          # Get the data part (third element)
+          .message = parts[4]
           
 
       # Process .
@@ -88,18 +89,20 @@ vector:
           .log_type = "user-logs"
           
           # SAMPLE LOG ! 
-          # [user-code-log-user-logs] [01JRJQGE2S07RKYRVRGSB3B1K5] [index.getDashboard] HELLO FOR LOG !
+          #[user-code-log-user-logs] [01JTAZT8CXT8VRB9QGMAE12939] [01JTAZT90XYXHZF4HMJQNHH8J8] [index.methodC] 
 
           # Split by commas and extract parts - faster than regex for simple patterns  
-          parts = split(string!(.message), " ", limit: 4)
+          parts = split(string!(.message), " ", limit: 6)
           
           # Clean up the ULID part (second element)  
           # Extract just the ULID characters using more efficient string operations  
           .metadata.traceId = slice!(parts[1], 1, -1)
-          .metadata.handler = slice!(parts[2], 1, -1)
+          .metadata.spanId = slice!(parts[2], 1, -1)
+          .metadata.requestId = slice!(parts[3], 1, -1)
+          .metadata.handler = slice!(parts[4], 1, -1)
           
           # Get the data part (last element)  
-          .message = parts[3]
+          .message = parts[5]
           
           
 
@@ -115,15 +118,17 @@ vector:
           .log_type = "rdk"
           
           # Split by commas and extract parts - faster than regex for simple patterns  
-          parts = split(string!(.message), " ", limit: 3)
+          parts = split(string!(.message), " ", limit: 5)
           
           # Clean up the ULID part (second element)  
           # Extract just the ULID characters using more efficient string operations  
           .metadata.traceId = slice!(parts[1], 1, -1)
+          .metadata.spanId = slice!(parts[2], 1, -1)
+          .metadata.requestId = slice!(parts[3], 1, -1)
           
           
           # Get the data part (third element)  
-          .message = parts[2]
+          .message = parts[4]
       
 
       # Optionally, handle logs that do not match either prefix.
@@ -164,6 +169,7 @@ vector:
           identity: '{{`{{ metadata.identity }}`}}'
           requestId: '{{`{{ metadata.requestId }}`}}'
           traceId: '{{`{{ metadata.traceId }}`}}'
+          spanId: '{{`{{ metadata.spanId }}`}}'
           requestTime: '{{`{{ metadata.requestTime }}`}}'
           responseTime: '{{`{{ metadata.responseTime }}`}}'
           statusCode: '{{`{{ metadata.statusCode }}`}}'
