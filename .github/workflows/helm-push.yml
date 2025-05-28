@@ -1,0 +1,44 @@
+name: Push Helm Chart to Harbor
+
+on:
+  push:
+    branches:
+      - ready-for-dev
+
+jobs:
+  push-helm-chart:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'latest'
+          
+      - name: Extract version from Chart.yaml
+        id: chart_version
+        run: |
+          VERSION=$(grep '^version:' charts/rio-projects/projectid3/Chart.yaml | awk '{print $2}')
+          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
+          echo "Chart version: $VERSION"
+          
+      - name: Login to Harbor Registry
+        run: |
+          helm registry login k8-harbor.retter.io \
+            --username ${{ secrets.HARBOR_USERNAME }} \
+            --password ${{ secrets.HARBOR_PASSWORD }}
+            
+      - name: Update dependencies and package chart
+        working-directory: charts/rio-projects/projectid3
+        run: |
+          helm dependency update
+          helm package .
+          
+      - name: Push chart to Harbor
+        working-directory: charts/rio-projects/projectid3
+        run: |
+          helm push user-code-${{ steps.chart_version.outputs.VERSION }}.tgz \
+            oci://k8-harbor.retter.io/rio-kubernetes-charts 
