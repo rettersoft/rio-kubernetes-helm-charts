@@ -1,53 +1,46 @@
 name: Release Helm Charts
-
 on:
   push:
     branches: [ ready-for-dev ]
-
 permissions:
   contents: write
 
 jobs:
   release:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        chart: [ projectid3, console, vault-manager ]
-
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
 
       - name: Read version file
         id: read_version
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Install yq
-        run: |
-          VERSION=v4.43.1
-          BINARY=yq_linux_amd64
-          wget https://github.com/mikefarah/yq/releases/download/${VERSION}/${BINARY}.tar.gz \
-            -O - | tar xz
-          sudo mv ${BINARY} /usr/local/bin/yq
-          sudo chmod +x /usr/local/bin/yq
-
-      - name: Install Helm
+      - name: Install Helm & yq
         run: |
           curl -Lo helm.tar.gz https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz && \
-            tar -zxvf helm.tar.gz linux-amd64/helm && \
-            mv linux-amd64/helm /usr/local/bin
+            tar zxvf helm.tar.gz linux-amd64/helm && mv linux-amd64/helm /usr/local/bin
+          wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/local/bin/yq && \
+            chmod +x /usr/local/bin/yq
 
-      - name: Bump chart version via yq
+      - name: Bump all chart versions
         run: |
           export NEW_VERSION="${{ steps.read_version.outputs.VERSION }}"
-          yq -i '.version = env(NEW_VERSION)' charts/rio-projects/${{ matrix.chart }}/Chart.yaml
-          yq -i '.appVersion = env(NEW_VERSION)' charts/rio-projects/${{ matrix.chart }}/Chart.yaml
+          for chart in projectid3 console vault-manager; do
+            yq eval -i '
+              .version = strenv(NEW_VERSION) |
+              .appVersion = strenv(NEW_VERSION)
+            ' charts/rio-projects/$chart/Chart.yaml
+          done
 
       - name: Commit version bump
         uses: EndBug/add-and-commit@v9
         with:
-          add: 'charts/rio-projects/${{ matrix.chart }}/Chart.yaml'
-          message: "chore(${ { matrix.chart }}): bump to ${{ steps.read_version.outputs.VERSION }}"
+          add: 'charts/rio-projects/*/Chart.yaml'
+          message: "chore: bump all charts to ${{ steps.read_version.outputs.VERSION }}"
+          fetch: '--tags --force'
 
       - name: Login to Harbor
         run: |
@@ -56,15 +49,13 @@ jobs:
               --username "${{ secrets.HARBOR_USERNAME }}" \
               --password-stdin
 
-      - name: Dependency update, package & push
-        working-directory: charts/rio-projects/${{ matrix.chart }}
+      - name: Package & push all charts
         run: |
-          helm dependency update
-          helm package . \
-            --version "${{ steps.read_version.outputs.VERSION }}" \
-            --app-version "${{ steps.read_version.outputs.VERSION }}"
-          helm push *.tgz oci://k8-harbor.retter.io/rio-project-charts
-
-      - name: Verify chart in registry
-        run: helm show chart oci://k8-harbor.retter.io/rio-project-charts/${{ matrix.chart }} \
-          --version "${{ steps.read_version.outputs.VERSION }}" || true
+          export NEW_VERSION="${{ steps.read_version.outputs.VERSION }}"
+          for chart in projectid3 console vault-manager; do
+            helm dependency update charts/rio-projects/$chart
+            helm package charts/rio-projects/$chart \
+              --version "$NEW_VERSION" --app-version "$NEW_VERSION"
+            helm push "${chart}-${NEW_VERSION}.tgz" \
+              oci://k8-harbor.retter.io/rio-project-charts
+          done
