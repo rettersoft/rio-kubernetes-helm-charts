@@ -69,55 +69,32 @@ credentials:
 
 jobs:
   - script: >
-      pipelineJob('project-setup') {
-        description('Pipeline job for project setup')
+      pipelineJob('project-config') {
+        description('Build the dynamic project-config.yaml from MongoDB')
         definition {
-          cpsScm {
-            scm {
-              git {
-                remote {
-                  url('git@github.com:rettersoft/rio-kubernetes-project-setup.git')
-                  credentials('ssh-key')
-                }
-                branches('*/main')
-              }
-            }
-            scriptPath('setup.Jenkinsfile')
+          cps {
+            script("""
+              @Library('retter@main') _
+              generateProjectConfig()
+            """.stripIndent())
           }
         }
         authenticationToken('')          
       }
 
   - script: >
-      pipelineJob('project-config') {
-        description('Pipeline job for project setup')
+      pipelineJob('project-setup') {
+        description('Seed all per-project folders & pipelineJobs via Job-DSL')
         definition {
-          cpsScm {
-            scm {
-              git {
-                remote {
-                  url('git@github.com:rettersoft/rio-kubernetes-project-setup.git')
-                  credentials('ssh-key')
-                }
-                branches('*/main')
+          cps {
+            script("""
+              @Library('retter@main') _
+              seedProjects()
+            """.stripIndent())
               }
             }
-            scriptPath('config.Jenkinsfile')
-          }
-        }
-        authenticationToken('')          
       }
 
-tool:
-  nodejs:
-    installations:
-      - name: "node22.8.x"
-        properties:
-          - installSource:
-              installers:
-                - nodeJSInstaller:
-                    id: "22.8.0"
-                    npmPackages: pnpm ts-node@10.9.1 typescript@5.0.3
 
 unclassified:
   globalLibraries:
@@ -134,3 +111,8 @@ unclassified:
                 remote: "git@github.com:rettersoft/rio-kubernetes-jenkins-global-pipeline.git"
                 credentialsId: "ssh-key"
 
+security:
+  gitHostKeyVerificationConfiguration:
+    sshHostKeyVerificationStrategy: "knownHostsFileVerificationStrategy"
+  globalJobDslSecurityConfiguration:
+    useScriptSecurity: false
