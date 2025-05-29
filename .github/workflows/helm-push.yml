@@ -57,5 +57,5 @@ jobs:
             helm package charts/rio-projects/$chart \
               --version "$NEW_VERSION" --app-version "$NEW_VERSION"
             helm push charts/rio-projects/$chart/*.tgz \
-              --version "$NEW_VERSION" --app-version "$NEW_VERSION"
+              oci://k8-harbor.retter.io/rio-project-charts
           done
