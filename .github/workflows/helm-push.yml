@@ -1,44 +1,62 @@
-name: Push Helm Chart to Harbor
+name: Release Helm Charts
 
 on:
   push:
-    branches:
-      - ready-for-dev
+    branches: [ ready-for-dev ]
+
+permissions:
+  contents: write
 
 jobs:
-  push-helm-chart:
+  release:
     runs-on: ubuntu-latest
-    
+    strategy:
+      matrix:
+        chart: [ projectid3, console, vault-manager ]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-        
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+
+      - name: Read version file
+        id: read_version
+        run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
+
+      - name: Install Helm & yq
+        run: |
+          curl -Lo helm.tar.gz https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz && \
+            tar -zxvf helm.tar.gz linux-amd64/helm && \
+            mv linux-amd64/helm /usr/local/bin
+          sudo apt-get update && sudo apt-get install -y yq
+
+      - name: Bump chart version via yq
+        run: |
+          export NEW_VERSION="${{ steps.read_version.outputs.VERSION }}"
+          yq -i '.version = env(NEW_VERSION)' charts/rio-projects/${{ matrix.chart }}/Chart.yaml
+          yq -i '.appVersion = env(NEW_VERSION)' charts/rio-projects/${{ matrix.chart }}/Chart.yaml
+
+      - name: Commit version bump
+        uses: EndBug/add-and-commit@v9
         with:
-          version: 'latest'
-          
-      - name: Extract version from Chart.yaml
-        id: chart_version
+          add: 'charts/rio-projects/${{ matrix.chart }}/Chart.yaml'
+          message: "chore(${ { matrix.chart }}): bump to ${{ steps.read_version.outputs.VERSION }}"
+
+      - name: Login to Harbor
         run: |
-          VERSION=$(grep '^version:' charts/rio-projects/projectid3/Chart.yaml | awk '{print $2}')
-          echo "VERSION=$VERSION" >> $GITHUB_OUTPUT
-          echo "Chart version: $VERSION"
-          
-      - name: Login to Harbor Registry
-        run: |
-          helm registry login k8-harbor.retter.io \
-            --username ${{ secrets.HARBOR_USERNAME }} \
-            --password ${{ secrets.HARBOR_PASSWORD }}
-            
-      - name: Update dependencies and package chart
-        working-directory: charts/rio-projects/projectid3
+          echo "${{ secrets.HARBOR_PASSWORD }}" \
+            | helm registry login k8-harbor.retter.io \
+              --username "${{ secrets.HARBOR_USERNAME }}" \
+              --password-stdin
+
+      - name: Dependency update, package & push
+        working-directory: charts/rio-projects/${{ matrix.chart }}
         run: |
           helm dependency update
-          helm package .
-          
-      - name: Push chart to Harbor
-        working-directory: charts/rio-projects/projectid3
-        run: |
-          helm push user-code-${{ steps.chart_version.outputs.VERSION }}.tgz \
-            oci://k8-harbor.retter.io/rio-kubernetes-charts 
+          helm package . \
+            --version "${{ steps.read_version.outputs.VERSION }}" \
+            --app-version "${{ steps.read_version.outputs.VERSION }}"
+          helm push *.tgz oci://k8-harbor.retter.io/rio-project-charts
+
+      - name: Verify chart in registry
+        run: helm show chart oci://k8-harbor.retter.io/rio-project-charts/${{ matrix.chart }} \
+          --version "${{ steps.read_version.outputs.VERSION }}" || true
