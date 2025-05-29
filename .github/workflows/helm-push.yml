@@ -56,5 +56,6 @@ jobs:
             helm dependency update charts/rio-projects/$chart
             helm package charts/rio-projects/$chart \
               --version "$NEW_VERSION" --app-version "$NEW_VERSION"
-            helm push *.tgz oci://k8-harbor.retter.io/rio-project-charts
+            helm push charts/rio-projects/$chart/*.tgz \
+              --version "$NEW_VERSION" --app-version "$NEW_VERSION"
           done
