@@ -1,4 +1,4 @@
-# .github/workflows/publish-rio-local-charts.yml
+# .github/workflows/helm-push-local.yml
 name: Publish rio-local Helm Charts
 
 on:
@@ -12,23 +12,20 @@ jobs:
   detect-charts:
     runs-on: ubuntu-latest
     outputs:
-      charts: ${{ steps.set-matrix.outputs.charts }}
+      charts: ${{ steps.find-charts.outputs.charts }}
     steps:
       - name: Check out code
         uses: actions/checkout@v4
 
-      - name: Detect rio-local charts
-        id: find
+      - id: find-charts
+        name: Detect rio-local charts
         run: |
-          # find all Chart.yaml under charts/rio-local, strip prefix, output JSON array
-          charts=$(find charts/rio-local -type f -name Chart.yaml \
-            -exec dirname {} \; | sed 's|charts/rio-local/||' | jq -R -s -c 'split("\n")[:-1]')
-          echo "::set-output name=charts::$charts"
-
-      - name: Set up matrix output
-        id: set-matrix
-        run: |
-          echo "::set-output name=charts::${{ steps.find.outputs.charts }}"
+          CHARTS=$(find charts/rio-local -type f -name Chart.yaml \
+            -exec dirname {} \; \
+            | sed 's|charts/rio-local/||' \
+            | jq -R -s -c 'split("\n")[:-1]')
+          # Default to empty array if none found
+          echo "charts=${CHARTS:-[]}" >> $GITHUB_OUTPUT
 
   publish:
     needs: detect-charts
@@ -45,20 +42,15 @@ jobs:
 
       - name: Setup Helm
         uses: azure/setup-helm@v4.3.0
-        with:
-          version: '3.11.3'
 
       - name: Login to Harbor
-        env:
-          HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
-          HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
         run: |
-          echo "$HARBOR_PASSWORD" \
+          echo "${{ secrets.HARBOR_PASSWORD }}" \
             | helm registry login k8-harbor.retter.io \
-                --username "$HARBOR_USERNAME" \
-                --password-stdin
+              --username "${{ secrets.HARBOR_USERNAME }}" \
+              --password-stdin
 
-      - name: Package & Push ${{ matrix.chart }}
+      - name: Package & Push chart ${{ matrix.chart }}
         working-directory: charts/rio-local/${{ matrix.chart }}
         run: |
           helm dependency update . || true
