@@ -18,12 +18,9 @@ jobs:
         id: read_version
         run: echo "VERSION=$(cat VERSION)" >> $GITHUB_OUTPUT
 
-      - name: Install Helm & yq
-        run: |
-          curl -Lo helm.tar.gz https://get.helm.sh/helm-v3.11.3-linux-amd64.tar.gz && \
-            tar zxvf helm.tar.gz linux-amd64/helm && mv linux-amd64/helm /usr/local/bin
-          wget https://github.com/mikefarah/yq/releases/download/v4.34.1/yq_linux_amd64 -O /usr/local/bin/yq && \
-            chmod +x /usr/local/bin/yq
+      - name: Commit version bump
+        uses: azure/setup-helm@v4.3.0
+        id: install
 
       - name: Bump all chart versions
         run: |
