@@ -3,7 +3,7 @@ name: Publish rio-local Helm Charts
 
 on:
   push:
-    branches: [ main ]
+    branches: [ ready-for-dev ]
 
 permissions:
   contents: read
