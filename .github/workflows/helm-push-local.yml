@@ -1,4 +1,3 @@
-# .github/workflows/helm-push-local.yml
 name: Publish rio-local Helm Charts
 
 on:
