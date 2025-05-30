@@ -1,0 +1,66 @@
+# .github/workflows/publish-rio-local-charts.yml
+name: Publish rio-local Helm Charts
+
+on:
+  push:
+    branches: [ main ]
+
+permissions:
+  contents: read
+
+jobs:
+  detect-charts:
+    runs-on: ubuntu-latest
+    outputs:
+      charts: ${{ steps.set-matrix.outputs.charts }}
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Detect rio-local charts
+        id: find
+        run: |
+          # find all Chart.yaml under charts/rio-local, strip prefix, output JSON array
+          charts=$(find charts/rio-local -type f -name Chart.yaml \
+            -exec dirname {} \; | sed 's|charts/rio-local/||' | jq -R -s -c 'split("\n")[:-1]')
+          echo "::set-output name=charts::$charts"
+
+      - name: Set up matrix output
+        id: set-matrix
+        run: |
+          echo "::set-output name=charts::${{ steps.find.outputs.charts }}"
+
+  publish:
+    needs: detect-charts
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        chart: ${{ fromJson(needs.detect-charts.outputs.charts) }}
+      fail-fast: false
+      max-parallel: 5
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4.3.0
+        with:
+          version: '3.11.3'
+
+      - name: Login to Harbor
+        env:
+          HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+          HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+        run: |
+          echo "$HARBOR_PASSWORD" \
+            | helm registry login k8-harbor.retter.io \
+                --username "$HARBOR_USERNAME" \
+                --password-stdin
+
+      - name: Package & Push ${{ matrix.chart }}
+        working-directory: charts/rio-local/${{ matrix.chart }}
+        run: |
+          helm dependency update . || true
+          helm package .
+          helm push *.tgz oci://k8-harbor.retter.io/rio-kubernetes-charts
