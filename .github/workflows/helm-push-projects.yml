@@ -25,7 +25,7 @@ jobs:
       - name: Bump all chart versions
         run: |
           export NEW_VERSION="${{ steps.read_version.outputs.VERSION }}"
-          for chart in projectid3 console vault-manager; do
+          for chart in rio-project console vault-manager; do
             yq eval -i '
               .version = strenv(NEW_VERSION) |
               .appVersion = strenv(NEW_VERSION)
@@ -49,7 +49,7 @@ jobs:
       - name: Package & push all charts
         run: |
           export NEW_VERSION="${{ steps.read_version.outputs.VERSION }}"
-          for chart in projectid3 console vault-manager; do
+          for chart in rio-project console vault-manager; do
             helm dependency update charts/rio-projects/$chart
             helm package charts/rio-projects/$chart \
               --version "$NEW_VERSION" --app-version "$NEW_VERSION"
