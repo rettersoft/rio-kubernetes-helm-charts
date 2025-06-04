@@ -81,3 +81,5 @@ pod: prometheus port 9090 (forward it to localhost:9090)
 if not installed helm-docs do this : brew install norwoodj/tap/helm-docs
 cd charts/rio-projects/projectid3
 helm-docs -u -i .helmdocsignore -c ../../
+
+change..
