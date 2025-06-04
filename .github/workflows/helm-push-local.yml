@@ -112,5 +112,5 @@ jobs:
         working-directory: charts/rio-local/${{ matrix.chart }}
         run: |
           helm dependency update . || true
-          helm package .
+          helm package . --version ${{ steps.read_version.outputs.VERSION }}
           helm push *.tgz oci://k8-harbor.retter.io/rio-kubernetes-charts
