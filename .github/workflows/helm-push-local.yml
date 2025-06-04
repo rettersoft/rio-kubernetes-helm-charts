@@ -70,16 +70,39 @@ jobs:
               --username "${{ secrets.HARBOR_USERNAME }}" \
               --password-stdin
 
-      - name: Delete existing chart version (if present)
+      - name: Delete existing chart version if it exists
+        id: delete_old
         run: |
-          VERSION="${{ steps.read_version.outputs.VERSION }}"
-          REPO_NAME="$chart"
-          echo "::debug::Deleting $REPO_NAME:$VERSION if it exists"
-          curl -i -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
-               -X DELETE \
-               "${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${REPO_NAME}/artifacts/${VERSION}" \
-               && echo "Deleted $REPO_NAME:$VERSION" \
-               || echo "No $REPO_NAME:$VERSION found or failed (maybe immutable)"
+          set -e
+          export VERSION="${{ steps.read_version.outputs.VERSION }}"
+          
+          # Construct URL to list artifacts for the chart
+          LIST_URL="${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${{ matrix.chart }}/artifacts?page=1&page_size=1&with_tag=true"
+          
+          # Retrieve full digest of existing artifact (if any) with tag == VERSION
+          EXISTING_DIGEST=$(curl -s -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
+            -H "Accept: application/json" \
+            "${LIST_URL}" \
+            | jq -r --arg TAG "${VERSION}" '
+                .[] 
+                | select(.tags[].name == $TAG) 
+                | .digest
+              ')
+          
+          if [[ -n "${EXISTING_DIGEST}" && "${EXISTING_DIGEST}" != "null" ]]; then
+            echo "Found existing digest: ${EXISTING_DIGEST} for version ${VERSION}"
+          
+            # Delete the old artifact by digest
+            curl -s -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
+              -X DELETE \
+              "${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${{ matrix.chart }}/artifacts/${EXISTING_DIGEST}"
+          
+            echo "Deleted old artifact ${EXISTING_DIGEST}"
+          else
+            echo "No existing artifact with tag ${VERSION} found; skipping delete."
+          fi
+        shell: bash
+
 
       - name: Package & Push chart ${{ matrix.chart }}
         working-directory: charts/rio-local/${{ matrix.chart }}
@@ -87,37 +110,3 @@ jobs:
           helm dependency update . || true
           helm package .
           helm push *.tgz oci://k8-harbor.retter.io/rio-kubernetes-charts
-
-
-  retention:
-    needs: publish
-    runs-on: ubuntu-latest
-    if: ${{ needs.publish.result == 'success' }}  # only run on overall success
-    env:
-      HARBOR_BASE_URL: https://k8-harbor.retter.io
-      HARBOR_PROJECT: rio-kubernetes-charts
-      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
-      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
-
-    steps:
-      - name: Get Retention Policy ID
-        id: get_retention_id
-        run: |
-          RET_ID=$(curl -su "$HARBOR_USERNAME:$HARBOR_PASSWORD" \
-            "$HARBOR_BASE_URL/api/v2.0/projects/$HARBOR_PROJECT" \
-            | jq -r '.metadata.retention_id')
-          echo "RETENTION_ID=$RET_ID" >> $GITHUB_OUTPUT
-          if [ -z "$RET_ID" ] || [ "$RET_ID" == "null" ]; then
-            echo "No retention policy bound to project $HARBOR_PROJECT"
-            exit 1
-          fi
-
-      - name: Run Retention
-        if: steps.get_retention_id.outputs.RETENTION_ID != ''
-        run: |
-          echo "🗑️ Running live retention policy ID ${{ steps.get_retention_id.outputs.RETENTION_ID }}"
-          curl -su "$HARBOR_USERNAME:$HARBOR_PASSWORD" \
-            -X POST \
-            "$HARBOR_BASE_URL/api/v2.0/retentions/${{ steps.get_retention_id.outputs.RETENTION_ID }}/executions" \
-            -H "Content-Type: application/json" \
-            -d '{"dry_run": false}'
