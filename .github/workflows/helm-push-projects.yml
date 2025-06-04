@@ -1,13 +1,26 @@
-name: Release Helm Charts
+name: Release rio-project Helm Charts
 on:
   push:
-    branches: [ ready-for-dev ]
+    branches: [ main, github-actions ]
+#    paths:
+#      - 'charts/rio-projects/**'
+#      - 'VERSION'
+#      - '.github/workflows/helm-push-projects.yml'
+
 permissions:
   contents: write
+  actions: write  # Add permission to trigger workflows
 
 jobs:
   release:
     runs-on: ubuntu-latest
+
+    env:
+      HARBOR_BASE_URL: https://k8-harbor.retter.io
+      HARBOR_PROJECT: rio-project-charts
+      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -36,7 +49,7 @@ jobs:
         uses: EndBug/add-and-commit@v9
         with:
           add: 'charts/rio-projects/*/Chart.yaml'
-          message: "chore: bump all charts to ${{ steps.read_version.outputs.VERSION }}"
+          message: "chore: bump all rio-project charts to ${{ steps.read_version.outputs.VERSION }}"
           fetch: '--tags --force'
 
       - name: Login to Harbor
@@ -45,6 +58,40 @@ jobs:
             | helm registry login k8-harbor.retter.io \
               --username "${{ secrets.HARBOR_USERNAME }}" \
               --password-stdin
+          
+      - name: Delete existing chart version if it exists
+        id: delete_old
+        run: |
+          set -e
+          export VERSION="${{ steps.read_version.outputs.VERSION }}"
+
+          # Construct URL to list artifacts for "rio-project"
+          LIST_URL="${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/rio-project/artifacts?page=1&page_size=1&with_tag=true"
+
+          # Retrieve full digest of existing artifact (if any) with tag == VERSION
+          EXISTING_DIGEST=$(curl -s -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
+            -H "Accept: application/json" \
+            "${LIST_URL}" \
+            | jq -r --arg TAG "${VERSION}" '
+                .[] 
+                | select(.tags[].name == $TAG) 
+                | .digest
+              ')
+
+          if [[ -n "${EXISTING_DIGEST}" && "${EXISTING_DIGEST}" != "null" ]]; then
+            echo "Found existing digest: ${EXISTING_DIGEST} for version ${VERSION}"
+
+            # Delete the old artifact by digest
+            curl -s -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
+              -X DELETE \
+              "${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/rio-project/artifacts/${EXISTING_DIGEST}"
+
+            echo "Deleted old artifact ${EXISTING_DIGEST}"
+          else
+            echo "No existing artifact with tag ${VERSION} found; skipping delete."
+          fi
+        shell: bash
+
 
       - name: Package & push all charts
         run: |
@@ -56,3 +103,10 @@ jobs:
             helm push "${chart}-${NEW_VERSION}.tgz" \
               oci://k8-harbor.retter.io/rio-project-charts
           done
+
+      - name: Cleanup Local Package Files
+        if: always()    # Clean up even if previous steps failed
+        working-directory: charts/rio-projects/${{ matrix.chart }}
+        # Remove any leftover .tgz packages to avoid clutter :contentReference[oaicite:17]{index=17}
+        run: |
+          rm -f *.tgz

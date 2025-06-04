@@ -1,11 +1,15 @@
-name: Publish rio-local Helm Charts
+name: Release rio-local Helm Charts
 
 on:
-  push:
-    branches: [ ready-for-dev ]
+  workflow_run:
+    workflows: ["Release rio-project Helm Charts"]
+    types:
+      - completed
+    branches: [ main, github-actions ]
 
 permissions:
-  contents: read
+  contents: write
+  actions: read
 
 jobs:
   detect-charts:
@@ -26,9 +30,31 @@ jobs:
           # Default to empty array if none found
           echo "charts=${CHARTS:-[]}" >> $GITHUB_OUTPUT
 
-  publish:
+  version-bump:
     needs: detect-charts
     runs-on: ubuntu-latest
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      - name: Commit version bump
+        uses: EndBug/add-and-commit@v9
+        with:
+          add: 'charts/rio-local/*/Chart.yaml'
+          message: "chore: bump all rio-local charts to ${{ steps.read_version.outputs.VERSION }}"
+          fetch: '--tags --force'
+
+
+  publish:
+    needs: version-bump
+    runs-on: ubuntu-latest
+
+    env:
+      HARBOR_BASE_URL: https://k8-harbor.retter.io
+      HARBOR_PROJECT: rio-kubernetes-charts
+      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
     strategy:
       matrix:
         chart: ${{ fromJson(needs.detect-charts.outputs.charts) }}
@@ -49,9 +75,54 @@ jobs:
               --username "${{ secrets.HARBOR_USERNAME }}" \
               --password-stdin
 
+      - name: Delete existing chart version (if present)
+        run: |
+          VERSION="${{ steps.read_version.outputs.VERSION }}"
+          REPO_NAME="$chart"
+          echo "::debug::Deleting $REPO_NAME:$VERSION if it exists"
+          curl -i -u "${HARBOR_USERNAME}:${HARBOR_PASSWORD}" \
+               -X DELETE \
+               "${HARBOR_BASE_URL}/api/v2.0/projects/${HARBOR_PROJECT}/repositories/${REPO_NAME}/artifacts/${VERSION}" \
+               && echo "Deleted $REPO_NAME:$VERSION" \
+               || echo "No $REPO_NAME:$VERSION found or failed (maybe immutable)"
+
       - name: Package & Push chart ${{ matrix.chart }}
         working-directory: charts/rio-local/${{ matrix.chart }}
         run: |
           helm dependency update . || true
           helm package .
           helm push *.tgz oci://k8-harbor.retter.io/rio-kubernetes-charts
+
+
+  retention:
+    needs: publish
+    runs-on: ubuntu-latest
+    if: ${{ needs.publish.result == 'success' }}  # only run on overall success
+    env:
+      HARBOR_BASE_URL: https://k8-harbor.retter.io
+      HARBOR_PROJECT: rio-kubernetes-charts
+      HARBOR_USERNAME: ${{ secrets.HARBOR_USERNAME }}
+      HARBOR_PASSWORD: ${{ secrets.HARBOR_PASSWORD }}
+
+    steps:
+      - name: Get Retention Policy ID
+        id: get_retention_id
+        run: |
+          RET_ID=$(curl -su "$HARBOR_USERNAME:$HARBOR_PASSWORD" \
+            "$HARBOR_BASE_URL/api/v2.0/projects/$HARBOR_PROJECT" \
+            | jq -r '.metadata.retention_id')
+          echo "RETENTION_ID=$RET_ID" >> $GITHUB_OUTPUT
+          if [ -z "$RET_ID" ] || [ "$RET_ID" == "null" ]; then
+            echo "No retention policy bound to project $HARBOR_PROJECT"
+            exit 1
+          fi
+
+      - name: Run Retention
+        if: steps.get_retention_id.outputs.RETENTION_ID != ''
+        run: |
+          echo "🗑️ Running live retention policy ID ${{ steps.get_retention_id.outputs.RETENTION_ID }}"
+          curl -su "$HARBOR_USERNAME:$HARBOR_PASSWORD" \
+            -X POST \
+            "$HARBOR_BASE_URL/api/v2.0/retentions/${{ steps.get_retention_id.outputs.RETENTION_ID }}/executions" \
+            -H "Content-Type: application/json" \
+            -d '{"dry_run": false}'
